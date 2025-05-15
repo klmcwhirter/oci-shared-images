@@ -2,52 +2,52 @@
 # order *is* significant in this file
 # order here establishes processing order
 
-- name: fedora41-dev-base
-  path: fedora41
+- name: fedora-dev-base
+  path: fedora
   enabled: true
 
-- name: fedora41-python
-  path: fedora41
+- name: fedora-python
+  path: fedora
   enabled: true
-- name: fedora41-python-dx
-  path: fedora41
+- name: fedora-python-dx
+  path: fedora
   enabled: true
   assemble: true
 
-- name: fedora41-dotnet
-  path: fedora41
+- name: fedora-dotnet
+  path: fedora
   enabled: false
-- name: fedora41-dotnet-dx
-  path: fedora41
+- name: fedora-dotnet-dx
+  path: fedora
   enabled: false
 
-- name: fedora41-go
-  path: fedora41
+- name: fedora-go
+  path: fedora
   enabled: false
-- name: fedora41-go-dx
-  path: fedora41
+- name: fedora-go-dx
+  path: fedora
   enabled: false
   assemble: false
 
-- name: fedora41-zig
-  path: fedora41
+- name: fedora-zig
+  path: fedora
   tag: 0.14.0
   enabled: false
-- name: fedora41-zig-dx
-  path: fedora41
+- name: fedora-zig-dx
+  path: fedora
   tag: 0.14.0
   enabled: false
-  distrobox: fedora41-zig-14-dx
+  distrobox: fedora-zig-14-dx
   assemble: false
 
 
 - name: debian
   path: debian
   tag: bookworm
-  enabled: true
+  enabled: false
 - name: debian-dx
   path: debian
   tag: bookworm
-  enabled: true
+  enabled: false
   distrbox: debian-bookworm-dx
-  assemble: true
+  assemble: false

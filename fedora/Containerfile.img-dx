@@ -1,4 +1,4 @@
-ARG IMG="fedora41-dev-base"
+ARG IMG="fedora-dev-base"
 ARG TAG="latest"
 
 FROM $IMG:$TAG

@@ -10,11 +10,12 @@ Right before I started using bluefin I had let go of k3s and went back to using 
 
 Using bluefin, I finally had a reason to dive deep into using [Dev Containers in vscode](https://code.visualstudio.com/docs/devcontainers/containers). And so the experimentation began...
 
-Of the 3 experiments I have performed so far, this one seems to offer the best balance of features and HD space utilization.
+Of the experiments I have performed so far, this one seems to offer the best balance of features and HD space utilization.
 
 - [Bluefin - use podman distrobox container in vscode](https://universal-blue.discourse.group/t/bluefin-use-podman-distrobox-container-in-vscode/6193)
 - [Bluefin - use docker distrobox container in vscode](https://universal-blue.discourse.group/t/bluefin-use-docker-distrobox-container-in-vscode/6195)
-- [Bluefin - rely on OCI layer sharing for distrobox and devcontainer](https://universal-blue.discourse.group/t/bluefin-rely-on-oci-layer-sharing-for-distrobox-and-devcontainer/6519)
+- [**Bluefin - rely on OCI layer sharing for distrobox and devcontainer**](https://universal-blue.discourse.group/t/bluefin-rely-on-oci-layer-sharing-for-distrobox-and-devcontainer/6519)
+- [Bluefin - Using distrobox with vscode tasks](https://universal-blue.discourse.group/t/bluefin-using-distrobox-with-vscode-tasks/8448)
 
 > [!IMPORTANT]
 >
@@ -73,22 +74,22 @@ This is just an example of my current setup. It will change drastically over tim
 ```
         ghcr.io/ublue-os/fedora-toolbox:latest
                         |
-                fedora41-dev-base                   includes git, vscode, emacs, info, vim, tmux, fastfetch, fzf, zoxide, jq, yq
+                fedora-dev-base                   includes git, vscode, emacs, info, vim, tmux, fastfetch, fzf, zoxide, jq, yq
                         |
-                fedora41-python                     includes py313, py314, py314t, tkinter, tk, gitk
-               /        |       \
-              /         |       fedora41-zig        includes clang, llvm, cmake, zig, zls
-             /          |             \
-    fedora41-go         |              |            includes golang, gopls
-       |                |              |
-fedora-go-dx fedora41-python-dx  fedora41-zig-dx    adds USER, GROUP - built with Containerfile.img-dx with IMG and USER build args
+                fedora-python                     includes py313, py314, py314t, tkinter, tk, gitk
+               /        |     \
+              /         |     fedora-zig          includes clang, llvm, cmake, zig, zls
+             /          |           \
+    fedora-go           |            |            includes golang, gopls
+       |                |            |
+fedora-go-dx fedora-python-dx  fedora-zig-dx      adds USER, GROUP - built with Containerfile.img-dx with IMG and USER build args
 ```
 
 ## Guiding Principles
 1. Keep the most common things that should be shared higher up in the hierarchy
 2. Keep things that are specific (especially version specific) lower in the hierarchy
-3. The final layers cannot be shared (`-dx` layers) but are built using a common parameterized build ([Containerfile.img-dx](./fedora41/Containerfile.img-dx)) for repeatability
-4. Both `distrobox` and `devcontainer` use `fedora41-*-dx` images and bind mount `$HOME` dir.
+3. The final layers cannot be shared (`-dx` layers) but are built using a common parameterized build ([Containerfile.img-dx](./fedora/Containerfile.img-dx)) for repeatability
+4. Both `distrobox` and `devcontainer` use `fedora-*-dx` images and bind mount `$HOME` dir.
 5. All activities that mutate the file system are constrained to `$HOME`, `/tmp`, etc. to eliminate OCI image layer Copy-on-Write (CoW) operations.
 6. Images and containers are periodically re-created to:
 	- update container internals efficiently
@@ -97,7 +98,7 @@ fedora-go-dx fedora41-python-dx  fedora41-zig-dx    adds USER, GROUP - built wit
 
 ## Amount of Reusability
 
-The layers from `ghcr.io/ublue-os/fedora-toolbox:latest`, `fedora41-dev-base` and `fedora41-python` are all shared. The rest are not (and should not be). If the lifetime of the images and containers are managed as projects become active / deferred then HD utilization will be minimized over time.
+The layers from `ghcr.io/ublue-os/fedora-toolbox:latest`, `fedora-dev-base` and `fedora-python` are all shared. The rest are not (and should not be). If the lifetime of the images and containers are managed as projects become active / deferred then HD utilization will be minimized over time.
 
 <details>
 <summary>Expand to see how layers are shared</summary>
@@ -119,7 +120,7 @@ vsc-pi-day-2025-with-py-661c447e34349d05dc28e2d4e1b224160b64e283dc0277ac1d54f3ef
   "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
 ]
 #* ----------------------------------------------------------------------
-fedora41-zig-dx
+fedora-zig-dx
 #* ----------------------------------------------------------------------
 [
   "sha256:0c2b6a377a20da8b9ac82b59bbbcfa9bd456c9b84d34e3061c7983dad7a8f099",
@@ -134,7 +135,7 @@ fedora41-zig-dx
   "sha256:6e4909f2a675d10605e7f69a27cc9180cbd0113d1f8a0d5bf720218decbd774c"
 ]
 #* ----------------------------------------------------------------------
-fedora41-go-dx
+fedora-go-dx
 #* ----------------------------------------------------------------------
 [
   "sha256:0c2b6a377a20da8b9ac82b59bbbcfa9bd456c9b84d34e3061c7983dad7a8f099",
@@ -148,7 +149,7 @@ fedora41-go-dx
   "sha256:9cbf655016ac3a4a54621b064257b45f1452048fd468cbd58eb3d8e1f1a48218"
 ]
 #* ----------------------------------------------------------------------
-fedora41-python-dx
+fedora-python-dx
 #* ----------------------------------------------------------------------
 [
   "sha256:0c2b6a377a20da8b9ac82b59bbbcfa9bd456c9b84d34e3061c7983dad7a8f099",
@@ -164,9 +165,9 @@ fedora41-python-dx
 </details>
 
 ## Dev Container Specific Concerns
-> Note that `vscode` is installed in `fedora41-dev-base` for `vscode-server` primarily. This is required by the **Dev Containers** `vscode` extension.
+> Note that `vscode` is installed in `fedora-dev-base` for `vscode-server` primarily. This is required by the **Dev Containers** `vscode` extension.
 
-When using the `fedora41-*-dx` images in a devcontainer please make sure to do the following.
+When using the `fedora-*-dx` images in a devcontainer please make sure to do the following.
 
 - Reference the local image
 - set the `$HOME` and `$USER` env vars
@@ -179,7 +180,7 @@ When using the `fedora41-*-dx` images in a devcontainer please make sure to do t
 ```json
 {
 	"name": "my-devcontainer-project",
-	"image": "fedora41-python-dx:latest",
+	"image": "fedora-python-dx:latest",
 	"containerEnv": {
 		"HOME": "/var/home/klmcw",
 		...
@@ -203,7 +204,7 @@ When using the `fedora41-*-dx` images in a devcontainer please make sure to do t
 > 
 > Since my goal is to minimize duplication and HD space utilization I am not heading down that path. Although the idea is good for a sizeable organization to share working image snippets.
 > 
-> I am going to rely on parameterized images as a means of sharing work - e.g., [Containerfile.img-dx](./fedora41/Containerfile.img-dx).
+> I am going to rely on parameterized images as a means of sharing work - e.g., [Containerfile.img-dx](./fedora/Containerfile.img-dx).
 
 ## Podman Distrobox Compatibility
 
@@ -218,14 +219,14 @@ And then just set distrobox to use the `podman` image and runtime, then assemble
 ```bash
 export DBX_CONTAINER_MANAGER=podman
 
-DBX_CONTAINER_ALWAYS_PULL=0 distrobox assemble create --replace --name fedora41-python-dx
+DBX_CONTAINER_ALWAYS_PULL=0 distrobox assemble create --replace --name fedora-python-dx
 ```
 
 I am not doing that because I am focused on minimizing duplication and HD space utilization.
 
 ## Example Consumer Project
 
-Please see [klmcwhirter/pi-day-2025-with-py](https://github.com/klmcwhirter/pi-day-2025-with-py) for a sample project that uses `fedora41-python-dx:latest` in a dev container.
+Please see [klmcwhirter/pi-day-2025-with-py](https://github.com/klmcwhirter/pi-day-2025-with-py) for a sample project that uses `fedora-python-dx:latest` in a dev container.
 
 ## Scripts and Sample Config
 
@@ -234,7 +235,7 @@ The main script is [`ocisictl`](./ocisictl). It will create all of the OCI image
 >
 > -many contributors
 
-_I am bad at naming. It stands for **oci**-**s**hared-**i**mage **c**on**t**ro**l**._
+_I am bad at naming. `ocisictl` stands for **oci**-**s**hared-**i**mage **c**on**t**ro**l**._
 
 It relies on the `yq` utility to inspect the configuration. You can install it with `brew install yq`.
 
@@ -252,8 +253,8 @@ The file is a YAML list where each item in the list represents and image to crea
 |Property|Description|Sample Value|
 | --- | --- | --- |
 |**Image Creation**|||
-|name|the image name; maps to Containerfile._name_|fedora41-python-dx|
-|path|the directory containing Containerfile._name_|fedora41|
+|name|the image name; maps to Containerfile._name_|fedora-python-dx|
+|path|the directory containing Containerfile._name_|fedora|
 |tag|the image tag to use; defaults to _latest_|0.14.0|
 |enabled|whether to process this item or not; defaults to `false`|true (or false)|
 |**Distrobox Assembly**|||

@@ -1,4 +1,4 @@
-FROM fedora41-python:latest
+FROM fedora-python:latest
 
 RUN dnf update -y && dnf install -y clang clang-devel cmake llvm llvm-devel lld lld-devel libxml2-devel
 

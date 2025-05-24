@@ -248,7 +248,7 @@ Another script, [`show_img_layers.sh`](./show_img_layers.sh) will show the layer
 ### Sample Config Structure
 The supplied [`ocisictl.yaml`](./ocisictl.yaml) file is setup to produce the graph above. It also creates `debian:bookworm` and `debian-bookworm-dx` to highlight how one might create multiple hierarchies if needed.
 
-The file is a YAML list where each item in the list represents and image to create and, optionally, a distrobox to assemble.
+The file is a YAML list where each item in the list represents an image to create and, optionally, a distrobox to assemble.
 
 |Property|Description|Sample Value|
 | --- | --- | --- |

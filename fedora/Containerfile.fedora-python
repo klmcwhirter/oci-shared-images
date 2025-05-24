@@ -16,6 +16,9 @@ RUN dnf install -y \
     readline-devel zlib-devel libffi-devel bzip2-devel xz-devel \
     libjpeg-turbo-devel \
     sqlite sqlite-devel sqlite-libs libuuid-devel gdbm-libs perf \
-    expat expat-devel mpdecimal python3-pip
+    expat expat-devel mpdecimal python3-pip \
+    gmp-devel mpfr-devel libmpc-devel
+
+# gmp-devel mpfr-devel libmpc-devel are for gmpy2 pip module
 
 # build cpython from the main or 3.14 branch

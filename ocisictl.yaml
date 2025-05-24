@@ -44,10 +44,10 @@
 - name: debian
   path: debian
   tag: bookworm
-  enabled: false
+  enabled: true
 - name: debian-dx
   path: debian
   tag: bookworm
-  enabled: false
+  enabled: true
   distrbox: debian-bookworm-dx
-  assemble: false
+  assemble: true

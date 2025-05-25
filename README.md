@@ -272,6 +272,14 @@ There are (at least) 2 basic assumptions being made by the sample artifacts.
 
 2. The base image in use is able to perform the commands in [./fedora/Containerfile.img-dx](./fedora/Containerfile.img-dx).
 
+Be aware, that in addition to those, if you are using `docker` you may want to add `export DBX_CONTAINER_MANAGER=docker` to your .bashrc (or equiv.).
+
+Be careful with that setting if you use `podman` as well though.
+
+I do. I am a container junky. Having both `docker` and `podman` gives me separate namespaces for dev stuff (docker) vs system stuff (podman) where I need stability.
+
+That frees me up to do `docker system prune -af --volumes` at any time without disturbing my _system_ containers.
+
 ## References
 1. https://universal-blue.discourse.group/t/bluefin-use-docker-distrobox-container-in-vscode/6195/1
 2. https://universal-blue.discourse.group/t/bluefin-use-podman-distrobox-container-in-vscode/6193/1

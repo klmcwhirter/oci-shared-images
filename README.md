@@ -261,6 +261,16 @@ The file is a YAML list where each item in the list represents an image to creat
 |distrobox|override the name for the assemble step; defaults to _name_|debian-bookworm-dx|
 |assemble|whether to assemble or not; defaults to true if _name_ ends with `-dx`|true (or false)|
 
+### Assumptions
+
+There are (at least) 2 basic assumptions bneing made by the sample artifacts.
+
+1. Your user is in the `docker` group if you are using `export DBX_CONTAINER_MANAGER=docker`, e.g., if using with devcontainers
+
+   If you are using [bluefin-dx](https://docs.projectbluefin.io/bluefin-dx/#step-2-add-yourself-to-the-right-groups) simply use `ujust dx-mode` and reboot.
+
+2. The base image in use is able to perform the commands in [./fedora/Containerfile.img-dx](./fedora/Containerfile.img-dx).
+
 ## References
 1. https://universal-blue.discourse.group/t/bluefin-use-docker-distrobox-container-in-vscode/6195/1
 2. https://universal-blue.discourse.group/t/bluefin-use-podman-distrobox-container-in-vscode/6193/1

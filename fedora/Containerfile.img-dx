@@ -19,6 +19,7 @@ sudo usermod -aG wheel ${USER}; \
 printf "%s ALL=(ALL:ALL) NOPASSWD: ALL\n" "${USER}" >> /etc/sudoers; \
 fi
 
+# Uncomment and move into 'RUN if' above to troubleshoot
 # ls -l /etc/sudoers; \
 # cat /etc/sudoers; \
 # id ${USER}; \

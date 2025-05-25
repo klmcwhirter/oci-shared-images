@@ -37,6 +37,7 @@ Of the experiments I have performed so far, this one seems to offer the best bal
 - [Example Consumer Project](#example-consumer-project)
 - [Scripts and Sample Config](#scripts-and-sample-config)
 - [Sample Config Structure](#sample-config-structure)
+- [Assumptions](#assumptions)
 - [References](#references)
 
 ## Problem Statement
@@ -263,7 +264,7 @@ The file is a YAML list where each item in the list represents an image to creat
 
 ### Assumptions
 
-There are (at least) 2 basic assumptions bneing made by the sample artifacts.
+There are (at least) 2 basic assumptions being made by the sample artifacts.
 
 1. Your user is in the `docker` group if you are using `export DBX_CONTAINER_MANAGER=docker`, e.g., if using with devcontainers
 

@@ -257,6 +257,7 @@ The file is a YAML list where each item in the list represents an image to creat
 |name|the image name; maps to Containerfile._name_|fedora-python-dx|
 |path|the directory containing Containerfile._name_|fedora|
 |tag|the image tag to use; defaults to _latest_|0.14.0|
+|manager|the DBX_CONTAINER_MANAGER to use; defaults to env var or `docker` if not set|`docker` or `podman`|
 |enabled|whether to process this item or not; defaults to `false`|true (or false)|
 |**Distrobox Assembly**|||
 |distrobox|override the name for the assemble step; defaults to _name_|debian-bookworm-dx|

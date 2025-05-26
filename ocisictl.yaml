@@ -4,38 +4,47 @@
 
 - name: fedora-dev-base
   path: fedora
+  manager: docker
   enabled: true
 
 - name: fedora-python
   path: fedora
+  manager: docker
   enabled: true
 - name: fedora-python-dx
   path: fedora
+  manager: docker
   enabled: true
   assemble: true
 
 - name: fedora-dotnet
   path: fedora
+  manager: docker
   enabled: false
 - name: fedora-dotnet-dx
   path: fedora
+  manager: docker
   enabled: false
 
 - name: fedora-go
   path: fedora
+  manager: docker
   enabled: false
 - name: fedora-go-dx
   path: fedora
+  manager: docker
   enabled: false
   assemble: false
 
 - name: fedora-zig
   path: fedora
   tag: 0.14.0
+  manager: docker
   enabled: false
 - name: fedora-zig-dx
   path: fedora
   tag: 0.14.0
+  manager: docker
   enabled: false
   distrobox: fedora-zig-14-dx
   assemble: false
@@ -44,10 +53,12 @@
 - name: debian
   path: debian
   tag: bookworm
+  manager: podman
   enabled: true
 - name: debian-dx
   path: debian
   tag: bookworm
+  manager: podman
   enabled: true
-  distrbox: debian-bookworm-dx
+  distrobox: debian-bookworm-dx
   assemble: true

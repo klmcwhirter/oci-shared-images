@@ -56,9 +56,9 @@ function assemble_distrobox
 {
     local name=$1
     local distrobox=$(config_img_distrobox $name)
-    [ -z "${distrobox}" -o "${distrobox}" = "null" ] && distrobox="${name}"
+    [ -z "${distrobox}" ] && distrobox="${name}"
     local manager=$(config_img_manager $name)
-    [ -z "${manager}" -o "${manager}" = "null" ] && manager="${DBX_CONTAINER_MANAGER:-docker}"
+    [ -z "${manager}" ] && manager="${DBX_CONTAINER_MANAGER:-docker}"
 
     _logbar Assembling ${distrobox} using ${manager} ...
 
@@ -76,10 +76,10 @@ function clean_imgs
     for img in $(config_imgs_not_assemble | tac)
     do
         local tag=$(config_img_tag $img)
-        [ -z "${tag}" -o "${tag}" = "null" ] && tag="latest"
+        [ -z "${tag}" ] && tag="latest"
 
         local manager=$(config_img_manager $img)
-        [ -z "${manager}" -o "${manager}" = "null" ] && manager=${DBX_CONTAINER_MANAGER}
+        [ -z "${manager}" ] && manager=${DBX_CONTAINER_MANAGER}
 
         img="${img}:${tag}"
         [ ${manager} = 'podman' ] && img=localhost/${img}
@@ -122,12 +122,12 @@ function config_imgs_managers
 #*----------------------------------------------------------------------------*
 function config_img_distrobox
 {
-    name=$1 yq 'filter(.name == strenv(name)) | .[].distrobox' ${CONFIG}
+    name=$1 yq 'filter(.name == strenv(name)) | .[].distrobox' ${CONFIG} | sed '/null/d'
 }
 #*----------------------------------------------------------------------------*
 function config_img_manager
 {
-    name=$1 yq 'filter(.name == strenv(name)) | .[].manager' ${CONFIG}
+    name=$1 yq 'filter(.name == strenv(name)) | .[].manager' ${CONFIG} | sed '/null/d'
 }
 #*----------------------------------------------------------------------------*
 function config_img_path
@@ -137,7 +137,17 @@ function config_img_path
 #*----------------------------------------------------------------------------*
 function config_img_tag
 {
-    name=$1 yq 'filter(.name == strenv(name)) | .[].tag' ${CONFIG}
+    name=$1 yq 'filter(.name == strenv(name)) | .[].tag' ${CONFIG} | sed '/null/d'
+}
+#*----------------------------------------------------------------------------*
+function containers_running
+{
+    local manager=$1
+
+    local idkey='.ID'
+    [ "${manager}" = "podman" ] && idkey=".[].Id"
+
+    ${manager} ps --format json | yq -p=j ${idkey} | sed '/---/d'
 }
 #*----------------------------------------------------------------------------*
 function create_img
@@ -146,10 +156,10 @@ function create_img
     local path=$(config_img_path $name)
 
     local tag=$(config_img_tag $name)
-    [ -z "${tag}" -o "${tag}" = "null" ] && tag="latest"
+    [ -z "${tag}" ] && tag="latest"
 
     local manager=$(config_img_manager $name)
-    [ -z "${manager}" -o "${manager}" = "null" ] && manager="${DBX_CONTAINER_MANAGER:-docker}"
+    [ -z "${manager}" ] && manager="${DBX_CONTAINER_MANAGER:-docker}"
 
     pushd ${path}
 
@@ -195,16 +205,13 @@ function create_img
 function do_prune
 {
     local managers=$(config_imgs_managers)
-    [ -z "${managers}" -o "${managers}" = "null" ] && managers="${DBX_CONTAINER_MANAGER:-docker}"
+    [ -z "${managers}" ] && managers="${DBX_CONTAINER_MANAGER:-docker}"
 
     for manager in ${managers}
     do
         _logbar Shutting down and pruning using ${manager} ...
 
-        idkey='.ID'
-        [ "${manager}" = "podman" ] && idkey=".[].Id"
-
-        for c in $(${manager} ps --format json | yq -p=j ${idkey} | sed '/---/d')
+        for c in $(containers_running ${manager})
         do
             ${manager} stop $c
         done

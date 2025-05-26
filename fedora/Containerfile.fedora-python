@@ -2,23 +2,25 @@ FROM fedora-dev-base:latest
 
 RUN dnf update -y && dnf install -y python3 python3-isort python3-tkinter \
     python3.14-devel python3.14-freethreading python3.14-tkinter tk \
-    gitk
-
-# https://devguide.python.org/getting-started/setup-building/#build-dependencies
-RUN dnf install -y git pkg-config \
-   dnf-plugins-core  # install this to use 'dnf builddep'
-
-RUN dnf -y builddep python3
-
-RUN dnf install -y \
-    clang clang-devel cmake llvm llvm-devel lld lld-devel \
-    gcc gcc-c++ gdb lzma glibc-devel libstdc++-devel openssl-devel \
-    readline-devel zlib-devel libffi-devel bzip2-devel xz-devel \
-    libjpeg-turbo-devel \
-    sqlite sqlite-devel sqlite-libs libuuid-devel gdbm-libs perf \
-    expat expat-devel mpdecimal python3-pip \
+    gitk \
     gmp-devel mpfr-devel libmpc-devel
 
 # gmp-devel mpfr-devel libmpc-devel are for gmpy2 pip module
+
+
+# https://devguide.python.org/getting-started/setup-building/#build-dependencies
+# RUN dnf install -y git pkg-config \
+#    dnf-plugins-core  # install this to use 'dnf builddep'
+
+# RUN dnf -y builddep python3
+
+# RUN dnf install -y \
+#     clang clang-devel cmake llvm llvm-devel lld lld-devel \
+#     gcc gcc-c++ gdb lzma glibc-devel libstdc++-devel openssl-devel \
+#     readline-devel zlib-devel libffi-devel bzip2-devel xz-devel \
+#     libjpeg-turbo-devel \
+#     sqlite sqlite-devel sqlite-libs libuuid-devel gdbm-libs perf \
+#     expat expat-devel mpdecimal python3-pip
+
 
 # build cpython from the main or 3.14 branch

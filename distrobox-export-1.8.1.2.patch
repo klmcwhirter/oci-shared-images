@@ -12,7 +12,7 @@ index ce58842..cf19cfa 100755
  
 +### always identify container manager if possible - support usage of multiple container managers on a single host system
 +if [ -n "${DBX_CONTAINER_MANAGER}" ]; then
-+	container_manager_prefix="DBX_CONTAINER_MANAGER=\"${DBX_CONTAINER_MANAGER:-podman}\""
++	container_manager_prefix="DBX_CONTAINER_MANAGER=\"${DBX_CONTAINER_MANAGER}\""
 +fi
 +container_command_prefix="env  ${container_manager_prefix:-} ${container_command_prefix}"
 +

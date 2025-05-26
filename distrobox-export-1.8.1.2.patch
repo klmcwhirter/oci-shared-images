@@ -1,8 +1,8 @@
 diff --git a/distrobox-export b/distrobox-export
-index ce58842..ca51432 100755
+index ce58842..cf19cfa 100755
 --- a/distrobox-export
 +++ b/distrobox-export
-@@ -282,9 +282,12 @@ fi
+@@ -282,9 +282,15 @@ fi
  container_command_prefix="${DISTROBOX_ENTER_PATH:-"distrobox-enter"} ${rootful} -n ${container_name} ${enter_flags} -- ${sudo_prefix} "
  
  if [ -n "${rootful}" ]; then
@@ -10,19 +10,22 @@ index ce58842..ca51432 100755
 +	container_command_prefix="SUDO_ASKPASS=\"${sudo_askpass_path}\" DBX_SUDO_PROGRAM=\"sudo --askpass\" ${container_command_prefix}"
  fi
  
-+### always identify container manager - support usage of multiple container managers on a single host system
-+container_command_prefix="env DBX_CONTAINER_MANAGER=\"${DBX_CONTAINER_MANAGER:-podman}\" ${container_command_prefix}"
++### always identify container manager if possible - support usage of multiple container managers on a single host system
++if [ -n "${DBX_CONTAINER_MANAGER}" ]; then
++	container_manager_prefix="DBX_CONTAINER_MANAGER=\"${DBX_CONTAINER_MANAGER:-podman}\""
++fi
++container_command_prefix="env  ${container_manager_prefix:-} ${container_command_prefix}"
 +
  if [ -z "${exported_app_label}" ]; then
  	exported_app_label=" (on ${container_name})"
  elif [ "${exported_app_label}" = "none" ]; then
-@@ -320,7 +323,8 @@ generate_script()
+@@ -320,7 +326,8 @@ generate_script()
  # distrobox_binary
  # name: ${container_name}
  if [ -z "\${CONTAINER_ID}" ]; then
 -	exec "${DISTROBOX_ENTER_PATH:-"distrobox-enter"}" ${rootful} -n ${container_name} ${enter_flags} -- ${sudo_prefix} ${container_command_suffix}
-+	### always identify container manager - support usage of multiple container managers on a single host system
-+	DBX_CONTAINER_MANAGER="${DBX_CONTAINER_MANAGER:-podman}" exec "${DISTROBOX_ENTER_PATH:-"distrobox-enter"}" ${rootful} -n ${container_name} ${enter_flags} -- ${sudo_prefix} ${container_command_suffix}
++	### always identify container manager if possible - support usage of multiple container managers on a single host system
++	${container_manager_prefix:-} exec "${DISTROBOX_ENTER_PATH:-"distrobox-enter"}" ${rootful} -n ${container_name} ${enter_flags} -- ${sudo_prefix} ${container_command_suffix}
  elif [ -n "\${CONTAINER_ID}" ] && [ "\${CONTAINER_ID}" != "${container_name}" ]; then
  	exec distrobox-host-exec '${dest_path}/$(basename "${exported_bin}")' "\$@"
  else

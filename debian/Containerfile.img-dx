@@ -14,9 +14,7 @@ RUN if ! grep "${USER}" /etc/group >/dev/null 2>&1;then sudo groupadd -g ${NEW_G
 
 RUN if ! grep "${USER}" /etc/passwd >/dev/null 2>&1; \
 then \
-sudo useradd -g ${NEW_GID} -u ${NEW_UID} ${USER}; \
-sudo usermod -aG wheel ${USER}; \
-printf "%s ALL=(ALL:ALL) NOPASSWD: ALL\n" "${USER}" >> /etc/sudoers; \
+sudo useradd -g ${NEW_GID} -G sudo -u ${NEW_UID} ${USER}; \
 fi
 
 # ls -l /etc/sudoers; \

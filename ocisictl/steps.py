@@ -39,7 +39,7 @@ def changed_dir(path: str) -> Generator[None]:
 
 @log_entry_exit
 def clean_images(ctx: AppContext) -> None:
-    if ctx.prune:
+    if not ctx.skip_clean:
         for img in reversed(ctx.config.images_not_assemble):
             logging.info(f'Cleaning {img.full_image_name} with {img.manager} ...')
 
@@ -49,6 +49,8 @@ def clean_images(ctx: AppContext) -> None:
 
         for manager in ctx.managers:
             cmd_output_to_terminal(cmd=f'{manager} buildx prune -af', ctx=ctx, verbose=ctx.verbose)
+    else:
+        logging.warning(f'Skipping clean images - skip-clean={ctx.skip_clean}')
 
 
 def create_image(ctx: AppContext, image: ContainerImage) -> None:
@@ -115,6 +117,38 @@ def do_prune(ctx: AppContext) -> None:
         logging.info(f'Shutting down and pruning using {manager} ... done.')
 
 
+@log_entry_exit
+def list_assemble(ctx: AppContext) -> None:
+    '''Given the config file in force, list the containers to assemble'''
+    print(pformat(ctx.config.containers_to_assemble, width=196, compact=True, sort_dicts=False))
+
+
+@log_entry_exit
+def list_enabled(ctx: AppContext) -> None:
+    '''Given the config file in force, list the images to create'''
+    print(pformat(ctx.config.images_enabled, width=196, compact=True, sort_dicts=False))
+
+
+@log_entry_exit
+def list_layers(ctx: AppContext) -> None:
+    for manager in ctx.config.managers:
+        cmd = ''
+        if manager == 'docker':
+            cmd = f'{manager} image ls --format json | yq -p=j \'select(.Repository != "<none>") | (.Repository + ":" + .Tag)\' | sed \'/---/d;/^:$/d\' | sort'  # noqa E501
+        elif manager == 'podman':
+            cmd = f'{manager} image ls --format json | yq -p=j \'.[] | select(.Names != null) | .Names[0]\' | sed \'/---/d\' | sort'
+        else:
+            continue
+
+        imgs_names = sorted(cmd_with_output(cmd=cmd, ctx=ctx, verbose=ctx.verbose).splitlines())
+        logging.debug(pformat(imgs_names))
+
+        for img_name in imgs_names:
+            logging.debug(f'{manager} - {img_name}')
+            cmd = f'echo "\n{manager} - {img_name}";{manager} inspect --format json {img_name} | yq -p=j .[0].RootFS.Layers'
+            cmd_output_to_terminal(cmd=cmd, ctx=ctx, verbose=ctx.verbose)
+
+
 @contextmanager
 def patched_distrobox_copied(ctx: AppContext) -> Generator[None]:
     try:
@@ -161,21 +195,15 @@ def process(ctx: AppContext) -> None:
     clean_images(ctx=ctx)
 
 
-@log_entry_exit
-def show_layers(ctx: AppContext) -> None:
-    for manager in ctx.config.managers:
-        cmd = ''
-        if manager == 'docker':
-            cmd = f'{manager} image ls --format json | yq -p=j \'select(.Repository != "<none>") | (.Repository + ":" + .Tag)\' | sed \'/---/d;/^:$/d\' | sort'  # noqa E501
-        elif manager == 'podman':
-            cmd = f'{manager} image ls --format json | yq -p=j \'.[] | select(.Names != null) | .Names[0]\' | sed \'/---/d\' | sort'
-        else:
-            continue
-
-        imgs_names = cmd_with_output(cmd=cmd, ctx=ctx, verbose=ctx.verbose).splitlines()
-        logging.info(pformat(imgs_names))
-
-        for img_name in imgs_names:
-            logging.info(f'{manager} - {img_name}')
-            cmd = f'{manager} inspect --format json {img_name} | yq -p=j .[0].RootFS.Layers'
-            cmd_output_to_terminal(cmd=cmd, ctx=ctx, verbose=ctx.verbose)
+def run_steps(ctx: AppContext) -> None:
+    if ctx.verb == 'list':
+        if ctx.list_layers:
+            list_layers(ctx=ctx)
+        elif ctx.list_assemble:
+            list_assemble(ctx=ctx)
+        elif ctx.list_enabled:
+            list_enabled(ctx=ctx)
+    elif ctx.verb == 'clean':
+        clean_images(ctx=ctx)
+    else:
+        process(ctx=ctx)

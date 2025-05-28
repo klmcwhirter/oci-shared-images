@@ -36,6 +36,7 @@ Of the experiments I have performed so far, this one seems to offer the best bal
 - [Podman Distrobox Compatibility](#podman-distrobox-compatibility)
 - [Example Consumer Project](#example-consumer-project)
 - [Scripts and Sample Config](#scripts-and-sample-config)
+- [Command Line Interface](#command-line-interface)
 - [Sample Config Structure](#sample-config-structure)
 - [Assumptions](#assumptions)
 - [References](#references)
@@ -105,63 +106,59 @@ The layers from `ghcr.io/ublue-os/fedora-toolbox:latest`, `fedora-dev-base` and 
 <summary>Expand to see how layers are shared</summary>
 
 ```
-$ ./show_img_layers.sh 
-#* ----------------------------------------------------------------------
-vsc-pi-day-2025-with-py-661c447e34349d05dc28e2d4e1b224160b64e283dc0277ac1d54f3ef09e9608c-uid
-#* ----------------------------------------------------------------------
-[
-  "sha256:0c2b6a377a20da8b9ac82b59bbbcfa9bd456c9b84d34e3061c7983dad7a8f099",
-  "sha256:b98392206191c39eeef6b2ca6f190614835decc5d5e9ee1a14e9bcbe6602c6b9",
-  "sha256:5751b81ae8667b954dc3c663aa797472e7e77bc46b640825069e0c86cde590ea",
-  "sha256:7e9c868121fc600cbc22ba2f463dc97c4bf6b424486ac9d13b3a96efc62afae8",
-  ---
-  "sha256:20951a30ee757fa4c4c9ed674a0cd4e9fe5c714a1bacfba71f089e602771820d",
-  "sha256:2a61b3c79f20e1dc7332ec35776e46760821e04a39193c6dd7feba4e2201f860",
-  "sha256:66280f6f1726d1ca9b6e005e69ea3c7c6814e1b44fab140053fa83fd453f6d7a",
-  "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
-]
-#* ----------------------------------------------------------------------
-fedora-zig-dx
-#* ----------------------------------------------------------------------
-[
-  "sha256:0c2b6a377a20da8b9ac82b59bbbcfa9bd456c9b84d34e3061c7983dad7a8f099",
-  "sha256:b98392206191c39eeef6b2ca6f190614835decc5d5e9ee1a14e9bcbe6602c6b9",
-  "sha256:5751b81ae8667b954dc3c663aa797472e7e77bc46b640825069e0c86cde590ea",
-  "sha256:7e9c868121fc600cbc22ba2f463dc97c4bf6b424486ac9d13b3a96efc62afae8",
-  ---
-  "sha256:bae5826f4b9ecf759664926666fbffaf77fecd578bcff44dd068a22629e73947",
-  "sha256:68537e08bc0cdd6af3e76c529f55c08022193926f8e2d58fe405909edbb06db9",
-  "sha256:20951a30ee757fa4c4c9ed674a0cd4e9fe5c714a1bacfba71f089e602771820d",
-  "sha256:53fed649be544c960f7e8081fe19f5847f9d799f11085daa2e0654049d2894c0",
-  "sha256:6e4909f2a675d10605e7f69a27cc9180cbd0113d1f8a0d5bf720218decbd774c"
-]
-#* ----------------------------------------------------------------------
-fedora-go-dx
-#* ----------------------------------------------------------------------
-[
-  "sha256:0c2b6a377a20da8b9ac82b59bbbcfa9bd456c9b84d34e3061c7983dad7a8f099",
-  "sha256:b98392206191c39eeef6b2ca6f190614835decc5d5e9ee1a14e9bcbe6602c6b9",
-  "sha256:5751b81ae8667b954dc3c663aa797472e7e77bc46b640825069e0c86cde590ea",
-  "sha256:7e9c868121fc600cbc22ba2f463dc97c4bf6b424486ac9d13b3a96efc62afae8",
-  ---
-  "sha256:4ab09ae90712d28fabed751da22fd5add31db35f41a606eb94f7fb986aaadeaf",
-  "sha256:a324f282ed39dcb7ebfb752d3daf5b601ed7101a93799e8f021b5ae607862e6b",
-  "sha256:c66cce1c5801fcf1d6dffc57c63969a9d8638ac2bed6283e13a962465867bbfc",
-  "sha256:9cbf655016ac3a4a54621b064257b45f1452048fd468cbd58eb3d8e1f1a48218"
-]
-#* ----------------------------------------------------------------------
-fedora-python-dx
-#* ----------------------------------------------------------------------
-[
-  "sha256:0c2b6a377a20da8b9ac82b59bbbcfa9bd456c9b84d34e3061c7983dad7a8f099",
-  "sha256:b98392206191c39eeef6b2ca6f190614835decc5d5e9ee1a14e9bcbe6602c6b9",
-  "sha256:5751b81ae8667b954dc3c663aa797472e7e77bc46b640825069e0c86cde590ea",
-  "sha256:7e9c868121fc600cbc22ba2f463dc97c4bf6b424486ac9d13b3a96efc62afae8",
-  ---
-  "sha256:20951a30ee757fa4c4c9ed674a0cd4e9fe5c714a1bacfba71f089e602771820d",
-  "sha256:2a61b3c79f20e1dc7332ec35776e46760821e04a39193c6dd7feba4e2201f860",
-  "sha256:66280f6f1726d1ca9b6e005e69ea3c7c6814e1b44fab140053fa83fd453f6d7a"
-]
+$ pdm start list --layers
+
+docker - fedora-dev-base:latest
+- sha256:8aa1535203f2a74c605e30406aea2a4e5df9e6ed0e4343a2df9d3d97f0d2d60b
+- sha256:cc6437ae47f7b2ae16ba45604edc5f63b274ca2d00303a4b2821f237bc03db20
+---
+- sha256:59a8d00200c9c1611119f7fdf63eac0dd0f1621b69748b329051002aebb8d4e3
+- sha256:1ebd0393e1601d812744b5d5cf1f171e56ad1353914fac54f11429e63d58077c
+
+docker - fedora-python-dx:latest
+- sha256:8aa1535203f2a74c605e30406aea2a4e5df9e6ed0e4343a2df9d3d97f0d2d60b
+- sha256:cc6437ae47f7b2ae16ba45604edc5f63b274ca2d00303a4b2821f237bc03db20
+---
+- sha256:59a8d00200c9c1611119f7fdf63eac0dd0f1621b69748b329051002aebb8d4e3
+- sha256:1ebd0393e1601d812744b5d5cf1f171e56ad1353914fac54f11429e63d58077c
+- sha256:4ab523a234e0d388e15cbcb9f5e3dcea0c6a2591a6b44a41df975fafae0fe592
+---
+- sha256:0f2d8438515715cef586a3f83e05cd2a3d29c0adfd4072949cee7b7535d2e981
+- sha256:fd9b2541960ca09c0f13e658510a4e65ce777bde3147a33ce561e11d95451ac1
+- sha256:4c5aca3e929a2e100cbc46eeb2332f5ab7cbfa88a32f80c21931929e84b2740d
+
+docker - fedora-python:latest
+- sha256:8aa1535203f2a74c605e30406aea2a4e5df9e6ed0e4343a2df9d3d97f0d2d60b
+- sha256:cc6437ae47f7b2ae16ba45604edc5f63b274ca2d00303a4b2821f237bc03db20
+---
+- sha256:59a8d00200c9c1611119f7fdf63eac0dd0f1621b69748b329051002aebb8d4e3
+- sha256:1ebd0393e1601d812744b5d5cf1f171e56ad1353914fac54f11429e63d58077c
+- sha256:4ab523a234e0d388e15cbcb9f5e3dcea0c6a2591a6b44a41df975fafae0fe592
+
+docker - ghcr.io/ublue-os/fedora-toolbox:latest
+- sha256:8aa1535203f2a74c605e30406aea2a4e5df9e6ed0e4343a2df9d3d97f0d2d60b
+- sha256:cc6437ae47f7b2ae16ba45604edc5f63b274ca2d00303a4b2821f237bc03db20
+
+podman - ghcr.io/ublue-os/debian-toolbox:latest
+- sha256:2f7436e79a0bc6cdec6536da54ae6a5863c8e3b5f145e0f8ac0b96306baddbc9
+- sha256:5a85dac09342d01219ae9d637ca0df331fc6fc87acd6b8eb8c5012c0723b1e45
+
+podman - localhost/debian:bookworm
+- sha256:2f7436e79a0bc6cdec6536da54ae6a5863c8e3b5f145e0f8ac0b96306baddbc9
+- sha256:5a85dac09342d01219ae9d637ca0df331fc6fc87acd6b8eb8c5012c0723b1e45
+---
+- sha256:93ede05a0a9d6728ec9f3be96761f6abfaac5c4fb10b296bf3667fe2162a312f
+- sha256:8c94e919a7bd1c6cb962a683059ecd7cf5ef2419b6768bc51197b74d6ff776e6
+
+podman - localhost/debian-dx:bookworm
+- sha256:2f7436e79a0bc6cdec6536da54ae6a5863c8e3b5f145e0f8ac0b96306baddbc9
+- sha256:5a85dac09342d01219ae9d637ca0df331fc6fc87acd6b8eb8c5012c0723b1e45
+---
+- sha256:93ede05a0a9d6728ec9f3be96761f6abfaac5c4fb10b296bf3667fe2162a312f
+- sha256:8c94e919a7bd1c6cb962a683059ecd7cf5ef2419b6768bc51197b74d6ff776e6
+---
+- sha256:54a5e317649be16ce3f8b2872f5237eec0cec60225ebdf596c0fddf2d535fb3f
+- sha256:42ea0539ce67b1de6d06e9dcdfb0341cc1f4cf317f8341e71d2c2a37d3293cf2
 ```
 </details>
 
@@ -242,26 +239,96 @@ It relies on the `yq` utility to inspect the configuration. You can install it w
 
 `ocisictl` uses a config file - [`ocisictl.yaml`](./ocisictl.yaml) to declare the image hierarchy and which containers to assemble.
 
-If the `--prune` arg is passed as the first script parameter it will stop all running containers and perform a `docker system prune -af --volumes` command before getting started.
+### Command Line Interface
 
-Another script, [`show_img_layers.sh`](./show_img_layers.sh) will show the layers of the built images as a means of showing layer reuse.
+`ocisictl` has the following verbs.
+
+_Note that all of them share these options._
+
+|Option|Comment|
+| --- | --- |
+| -h, --help | print help and exit |
+| -f, --file FILE | provides support for multiple yaml files |
+| -v, --verbose | turn on verbose (also debug) output |
+
+```
+$ pdm start --help
+
+usage: python -m ocisictl [-h] (list | process | clean) ...
+
+options:
+  -h, --help            show this help message and exit
+
+verbs:
+  (list | process | clean)
+    list                List information about the configuration or the system
+    process             Create images / assemble containers
+    clean               Clean up images
+```
+
+```
+$ pdm start list --help
+
+usage: python -m ocisictl list [-h] [-f FILE] (-a | -e | -l) [-v]
+
+List information about the configuration or the system
+
+options:
+  -h, --help       show this help message and exit
+  -f, --file FILE  configuration FILE (default: ocisictl.yaml)
+  -a, --assemble   list containers to assemble (default: False)
+  -e, --enabled    list images to create (default: False)
+  -l, --layers     list layers of images (default: False)
+  -v, --verbose    enable verbose output (default: False)
+```
+
+```
+$ pdm start process --help
+
+usage: python -m ocisictl process [-h] [-f FILE] [-p] [-s] [-v]
+
+Create images / assemble containers
+
+options:
+  -h, --help        show this help message and exit
+  -f, --file FILE   configuration FILE (default: ocisictl.yaml)
+  -p, --prune       stop containers and perform system pruning before
+                    starting, and clean up artifacts after done (default:
+                    False)
+  -s, --skip-clean  skip the clean up artifacts step after done (default:
+                    False)
+  -v, --verbose     enable verbose output (default: False)
+```
+
+```
+$ pdm start clean --help
+
+usage: python -m ocisictl clean [-h] [-f FILE] [-v]
+
+Clean up images
+
+options:
+  -h, --help       show this help message and exit
+  -f, --file FILE  configuration FILE (default: ocisictl.yaml)
+  -v, --verbose    enable verbose output (default: False)
+```
 
 ### Sample Config Structure
 The supplied [`ocisictl.yaml`](./ocisictl.yaml) file is setup to produce the graph above. It also creates `debian:bookworm` and `debian-bookworm-dx` to highlight how one might create multiple hierarchies if needed.
 
 The file is a YAML list where each item in the list represents an image to create and, optionally, a distrobox to assemble.
 
-|Property|Description|Sample Value|
-| --- | --- | --- |
-|**Image Creation**|||
-|name|the image name; maps to Containerfile._name_|fedora-python-dx|
-|path|the directory containing Containerfile._name_|fedora|
-|tag|the image tag to use; defaults to _latest_|0.14.0|
-|manager|the DBX_CONTAINER_MANAGER to use; defaults to env var or `docker` if not set|`docker` or `podman`|
-|enabled|whether to process this item or not; defaults to `false`|true (or false)|
-|**Distrobox Assembly**|||
-|distrobox|override the name for the assemble step; defaults to _name_|debian-bookworm-dx|
-|assemble|whether to assemble or not; defaults to true if _name_ ends with `-dx`|true (or false)|
+|Property|Description|Required|Sample Value|
+| --- | --- | --- | --- |
+|**Image Creation**||||
+|name|the image name; maps to Containerfile._name_|X|fedora-python-dx|
+|path|the directory containing Containerfile._name_|X|fedora|
+|enabled|whether to process this item or not; defaults to `false`|X|true (or false)|
+|tag|the image tag to use; defaults to _latest_||0.14.0|
+|manager|the DBX_CONTAINER_MANAGER to use; defaults to env var or `docker` if not set||`docker` or `podman`|
+|**Distrobox Assembly**||||
+|distrobox|override the name for the assemble step; defaults to _name_||debian-bookworm-dx|
+|assemble|whether to assemble or not; defaults to true if _name_ ends with `-dx`||true (or false)|
 
 ### Assumptions
 
@@ -271,15 +338,15 @@ There are (at least) 2 basic assumptions being made by the sample artifacts.
 
    If you are using [bluefin-dx](https://docs.projectbluefin.io/bluefin-dx/#step-2-add-yourself-to-the-right-groups) simply use `ujust dx-mode` and reboot.
 
-2. The base image in use is able to perform the commands in [./fedora/Containerfile.img-dx](./fedora/Containerfile.img-dx).
+2. The base image in use is able to perform the commands in [./fedora/Containerfile.img-dx](./fedora/Containerfile.img-dx) and  [./debian/Containerfile.img-dx](./debian/Containerfile.img-dx) if debian is left `enabled`.
 
-Be aware, that in addition to those, if you are using `docker` you may want to add `export DBX_CONTAINER_MANAGER=docker` to your .bashrc (or equiv.).
-
-Be careful with that setting if you use `podman` as well though.
-
-I do. I am a container junky. Having both `docker` and `podman` gives me separate namespaces for dev stuff (docker) vs system stuff (podman) where I need stability.
-
-That frees me up to do `docker system prune -af --volumes` at any time without disturbing my _system_ containers.
+> In addition to those, if you are using `docker` you may want to add `export DBX_CONTAINER_MANAGER=docker` to your .bashrc (or equiv.).
+> 
+> Be careful with that setting if you use `podman` as well though.
+> 
+> I do. I am a container junky. Having both `docker` and `podman` gives me separate namespaces for dev stuff (docker) vs system stuff (podman) where I need stability.
+> 
+> That frees me up to do `docker system prune -af --volumes` at any time without disturbing my _system_ containers.
 
 ## References
 1. https://universal-blue.discourse.group/t/bluefin-use-docker-distrobox-container-in-vscode/6195/1

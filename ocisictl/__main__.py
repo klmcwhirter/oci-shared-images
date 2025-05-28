@@ -3,7 +3,7 @@
 import sys
 
 from ocisictl.cli import parse_args
-from ocisictl.steps import process, show_layers
+from ocisictl.steps import run_steps
 
 
 def main(args: list[str]) -> None:
@@ -11,11 +11,8 @@ def main(args: list[str]) -> None:
 
     ctx.log()
 
-    if (ctx.show_layers):
-        show_layers(ctx=ctx)
-    else:
-        process(ctx=ctx)
+    run_steps(ctx=ctx)
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main(sys.argv[1:])

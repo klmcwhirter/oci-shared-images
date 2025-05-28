@@ -27,7 +27,8 @@ class ContainerImage:
 
     @property
     def full_image_name(self) -> str:
-        prefix = 'localhost/' if self.manager == 'podman' else ''
+        # prefix = 'localhost/' if self.manager == 'podman' else ''
+        prefix = ''
         return f'{prefix}{self.name}:{self.tag}' if self.tag else f'{prefix}{self.name}'
 
     def manager_name(self, default: str) -> str:
@@ -36,7 +37,7 @@ class ContainerImage:
     def __post_init__(self) -> None:
         self.tag = self.tag if self.tag else 'latest'
         self.distrobox = self.distrobox if self.distrobox else self.name
-        self.assemble = self.assemble if self.assemble else False
+        self.assemble = self.assemble == True or self.name.endswith('-dx')
 
 
 @dataclass
@@ -46,7 +47,7 @@ class AppConfig:
 
     @property
     def containers_to_assemble(self) -> list[ContainerImage]:
-        return [ci for ci in self.images if ci.assemble]
+        return [ci for ci in self.images if ci.assemble and ci.enabled]
 
     @property
     def images_enabled(self) -> list[ContainerImage]:
@@ -82,10 +83,6 @@ class AppContext:
         return os.getenv('DBX_CONTAINER_MANAGER', 'docker')
 
     @property
-    def prune(self) -> bool:
-        return self.args.prune
-
-    @property
     def managers(self) -> list[str]:
         mgrs = self.config.managers
 
@@ -95,8 +92,28 @@ class AppContext:
         return mgrs
 
     @property
-    def show_layers(self) -> bool:
-        return self.args.show_layers
+    def list_assemble(self) -> bool:
+        return self.args.assemble
+
+    @property
+    def list_enabled(self) -> bool:
+        return self.args.enabled
+
+    @property
+    def list_layers(self) -> bool:
+        return self.args.layers
+
+    @property
+    def prune(self) -> bool:
+        return self.args.prune
+
+    @property
+    def skip_clean(self) -> bool:
+        return hasattr(self.args, 'skip_clean') and self.args.skip_clean
+
+    @property
+    def verb(self) -> str:
+        return self.args.verb
 
     @property
     def verbose(self) -> bool:
@@ -109,3 +126,8 @@ class AppContext:
 
     def log(self) -> None:
         logging.debug(pformat(self, indent=0, depth=3, width=196, compact=True, sort_dicts=False))
+
+    @staticmethod
+    def from_args(args: argparse.Namespace) -> AppContext:
+        app_config = AppConfig.from_yaml(args.file)
+        return AppContext(args=args, config=app_config)

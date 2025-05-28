@@ -1,5 +1,8 @@
 # Bluefin - rely on OCI layer sharing for distrobox and devcontainer
 
+> [!IMPORTANT]
+> The work in this branch is deprecated. But I will leave it here for now. Please see the Python version in the master branch.
+
  [![project bluefin](./docs/project-bluefin.svg)](https://projectbluefin.io/)
 
 As I began using bluefin on my production laptop I was really challenged to rethink my assumptions on how to use and manage a development linux workstation.

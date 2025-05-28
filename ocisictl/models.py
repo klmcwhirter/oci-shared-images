@@ -37,7 +37,7 @@ class ContainerImage:
     def __post_init__(self) -> None:
         self.tag = self.tag if self.tag else 'latest'
         self.distrobox = self.distrobox if self.distrobox else self.name
-        self.assemble = self.assemble == True or self.name.endswith('-dx')
+        self.assemble = self.assemble is True or self.name.endswith('-dx')
 
 
 @dataclass
@@ -122,12 +122,12 @@ class AppContext:
     def _setup_logging(self) -> None:
         log_level = logging.DEBUG if self.verbose else logging.INFO
         logging.basicConfig(level=log_level, stream=sys.stdout,
-                            format='{asctime} - {module} - {levelname} - {message}', style='{')
+                            format='{asctime} - {module} - {levelname} - {funcName} - {message}', style='{')
 
     def log(self) -> None:
         logging.debug(pformat(self, indent=0, depth=3, width=196, compact=True, sort_dicts=False))
 
     @staticmethod
-    def from_args(args: argparse.Namespace) -> AppContext:
+    def from_args(args: argparse.Namespace) -> AppContext:  # noqa F821
         app_config = AppConfig.from_yaml(args.file)
         return AppContext(args=args, config=app_config)

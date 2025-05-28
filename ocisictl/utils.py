@@ -1,19 +1,17 @@
 
 import logging
-from functools import wraps
 import subprocess
+from functools import wraps
 
-from ocisictl.models import AppContext
 
-
-def cmd_output_to_terminal(cmd: str, ctx: AppContext, verbose=True) -> int:
+def cmd_output_to_terminal(cmd: str, verbose=True) -> int:
     if verbose:
         logging.info(cmd)
 
     return subprocess.call(cmd, shell=True, text=verbose)
 
 
-def cmd_with_output(cmd: str, ctx: AppContext, verbose=True) -> str:
+def cmd_with_output(cmd: str, verbose=True) -> str:
     if verbose:
         logging.info(cmd)
 

@@ -2,13 +2,11 @@
 name = "oci-shared-images"
 version = "0.1.0"
 description = "Bluefin - rely on OCI layer sharing for distrobox and devcontainer"
-authors = [
-    {name = "Kevin McWhirter", email = "klmcw@yahoo.com"},
-]
+authors = [{ name = "Kevin McWhirter", email = "klmcw@yahoo.com" }]
 dependencies = ["pyyaml>=6.0.2"]
 requires-python = "==3.14.*"
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 
 
 [project.optional-dependencies]
@@ -36,7 +34,7 @@ clean.help = "Clean build artifacts"
 envclean.shell = "for d in ${TO_DEL};do echo $d;rm -fr $d;done"
 envclean.env = { TO_DEL = ".venv" }
 envclean.help = "Clean environment"
-distclean.composite = [ "clean", "envclean" ]
+distclean.composite = ["clean", "envclean"]
 
 gitignore.shell = "source ~/.local/.bash.d/gitignore.io; gi -s -- python >.gitignore;echo '\ndistrobox-export\n.pdm-python\n' >>.gitignore"
 gitignore.help = "generate .gitignore"
@@ -45,7 +43,7 @@ flake8 = "flake8 ocisictl/"
 
 mypy = "mypy ocisictl/"
 
-test.composite = ["pytest", "flake8"]  # "mypy"
+test.composite = ["flake8", "mypy"] # "pytest"
 
 pytest.cmd = "pytest"
 
@@ -53,3 +51,6 @@ testcov.cmd = "pytest --cov=ocisictl --cov-report xml:coverage.xml --cov-report 
 testcov.help = "Produce test coverage xml and term reports"
 
 tox = "tox"
+
+[tool.isort]
+multi_line_output = 3

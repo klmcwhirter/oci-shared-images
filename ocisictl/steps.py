@@ -141,6 +141,8 @@ def list_layers(ctx: AppContext) -> None:
 def process(ctx: AppContext) -> None:
     if ctx.prune:
         do_prune(ctx=ctx)
+    else:
+        logging.warning(f'Skipping prune step - prune={ctx.prune}')
 
     with patched_distrobox_export(verbose=ctx.verbose):
         for img in ctx.config.images_enabled:

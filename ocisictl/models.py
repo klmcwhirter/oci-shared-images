@@ -36,7 +36,6 @@ class ContainerImage:
 
     def __post_init__(self) -> None:
         self.tag = self.tag if self.tag else 'latest'
-        self.distrobox = self.distrobox if self.distrobox else self.name
         self.assemble = self.assemble is True or self.name.endswith('-dx')
 
 

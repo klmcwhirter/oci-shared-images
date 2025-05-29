@@ -1,0 +1,16 @@
+# ocisictl.yaml
+# order *is* significant in this file
+# order here establishes processing order
+
+- name: debian
+  path: debian
+  tag: bookworm
+  manager: podman
+  enabled: true
+- name: debian-dx
+  path: debian
+  tag: bookworm
+  manager: podman
+  enabled: true
+  distrobox: debian-bookworm-dx
+  assemble: true

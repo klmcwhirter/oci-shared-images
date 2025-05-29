@@ -80,7 +80,7 @@ This is just an example of my current setup. It will change drastically over tim
                         |
                 fedora-python                     includes py313, py314, py314t, tkinter, tk, gitk
                /        |     \
-              /         |     fedora-zig          includes clang, llvm, cmake, zig, zls
+              /         |     fedora-zig:0.14     includes clang, llvm, cmake, zig, zls
              /          |           \
     fedora-go           |            |            includes golang, gopls
        |                |            |
@@ -106,7 +106,7 @@ The layers from `ghcr.io/ublue-os/fedora-toolbox:latest`, `fedora-dev-base` and 
 <summary>Expand to see how layers are shared</summary>
 
 ```
-$ pdm start list --layers
+$ ./ocisictl.sh list --layers
 
 docker - fedora-dev-base:latest
 - sha256:8aa1535203f2a74c605e30406aea2a4e5df9e6ed0e4343a2df9d3d97f0d2d60b
@@ -164,6 +164,9 @@ podman - localhost/debian-dx:bookworm
 
 ## Dev Container Specific Concerns
 > Note that `vscode` is installed in `fedora-dev-base` for `vscode-server` primarily. This is required by the **Dev Containers** `vscode` extension.
+> 
+> When switchng projects (and devcontainer) that needs different extensions I find I need to `rm -fr ~/.vscode-server` before creating the new devcontainer.
+> This is a downside of mounting my `$HOME` directory that I live with.
 
 When using the `fedora-*-dx` images in a devcontainer please make sure to do the following.
 
@@ -202,7 +205,7 @@ When using the `fedora-*-dx` images in a devcontainer please make sure to do the
 > 
 > Since my goal is to minimize duplication and HD space utilization I am not heading down that path. Although the idea is good for a sizeable organization to share working image snippets.
 > 
-> I am going to rely on parameterized images as a means of sharing work - e.g., [Containerfile.img-dx](./fedora/Containerfile.img-dx).
+> I am going to rely on parameterized Containerfiles as a means of sharing work - e.g., [Containerfile.img-dx](./fedora/Containerfile.img-dx).
 
 ## Podman Distrobox Compatibility
 
@@ -228,14 +231,15 @@ Please see [klmcwhirter/pi-day-2025-with-py](https://github.com/klmcwhirter/pi-d
 
 ## Scripts and Sample Config
 
-The main script is [`ocisictl`](./ocisictl). It will create all of the OCI images and assemble distroboxen.
+> [!IMPORTANT]
+> The `ocisictl` tool has been rewritten in Python. If you are looking for the shell implementation see the [ocisictl-shell](https://github.com/klmcwhirter/oci-shared-images/tree/ocisictl-shell) branch.
+
+The main script is [`ocisictl.sh`](./ocisictl.sh). It will create all of the OCI images and assemble distroboxen.
 > "2 things are hard in programming: cache invalidation, **naming things** and off-by-one errors."
 >
 > -many contributors
 
 _I am bad at naming. `ocisictl` stands for **oci**-**s**hared-**i**mage **c**on**t**ro**l**._
-
-It relies on the `yq` utility to inspect the configuration. You can install it with `brew install yq`.
 
 `ocisictl` uses a config file - [`ocisictl.yaml`](./ocisictl.yaml) to declare the image hierarchy and which containers to assemble.
 
@@ -251,8 +255,12 @@ _Note that all of them share these options._
 | -f, --file FILE | provides support for multiple yaml files |
 | -v, --verbose | turn on verbose (also debug) output |
 
+With the `-f` option you can now have multiple config files to keep things focused. For example, I have added an [`ocisictl-system.yaml`](./ocisictl-system.yaml) file to show how another hierarchy could be added for _system_ (or whatever category you can dream up) containers.
+
+Then you can simply do `./ocisictl.sh process -f ocisictl-system.yaml` or `./ocisictl.sh list -f ocisictl-system.yaml --layers`.
+
 ```
-$ pdm start --help
+$ ./ocisictl.sh --help
 
 usage: python -m ocisictl [-h] (list | process | clean) ...
 
@@ -267,7 +275,7 @@ verbs:
 ```
 
 ```
-$ pdm start list --help
+$ ./ocisictl.sh list --help
 
 usage: python -m ocisictl list [-h] [-f FILE] (-a | -e | -l) [-v]
 
@@ -283,7 +291,7 @@ options:
 ```
 
 ```
-$ pdm start process --help
+$ ./ocisictl.sh process --help
 
 usage: python -m ocisictl process [-h] [-f FILE] [-p] [-s] [-v]
 
@@ -301,7 +309,7 @@ options:
 ```
 
 ```
-$ pdm start clean --help
+$ ./ocisictl.sh clean --help
 
 usage: python -m ocisictl clean [-h] [-f FILE] [-v]
 
@@ -323,12 +331,12 @@ The file is a YAML list where each item in the list represents an image to creat
 |**Image Creation**||||
 |name|the image name; maps to Containerfile._name_|X|fedora-python-dx|
 |path|the directory containing Containerfile._name_|X|fedora|
-|enabled|whether to process this item or not; defaults to `false`|X|true (or false)|
+|enabled|whether to process this item or not|X|true or false|
 |tag|the image tag to use; defaults to _latest_||0.14.0|
-|manager|the DBX_CONTAINER_MANAGER to use; defaults to env var or `docker` if not set||`docker` or `podman`|
+|manager|the DBX_CONTAINER_MANAGER to use; defaults to env var or `docker` if not set; accessible in `PATH`||`docker` or `podman`|
 |**Distrobox Assembly**||||
 |distrobox|override the name for the assemble step; defaults to _name_||debian-bookworm-dx|
-|assemble|whether to assemble or not; defaults to true if _name_ ends with `-dx`||true (or false)|
+|assemble|whether to assemble or not; defaults to true if _name_ ends with `-dx`||true or false|
 
 ### Assumptions
 

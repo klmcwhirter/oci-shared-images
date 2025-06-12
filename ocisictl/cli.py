@@ -17,13 +17,12 @@ def parse_args(args: list[str]) -> AppContext:
                           description=ls_desc,
                           help=ls_desc,
                           formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ls.add_argument('-f', '--file', default=config_file, metavar='FILE', help='configuration FILE')
-
     meg = ls.add_mutually_exclusive_group(required=True)
     meg.add_argument('-a', '--assemble', default=False, action='store_true', help='list containers to assemble')
     meg.add_argument('-e', '--enabled', default=False, action='store_true', help='list images to create')
     meg.add_argument('-l', '--layers', default=False, action='store_true', help='list layers of images')
 
+    ls.add_argument('-f', '--file', default=config_file, metavar='FILE', help='configuration FILE')
     ls.add_argument('-v', '--verbose', default=False, action='store_true', help='enable verbose output')
 
     proc_desc = 'Create images / assemble containers'
@@ -33,7 +32,7 @@ def parse_args(args: list[str]) -> AppContext:
                             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     proc.add_argument('-f', '--file', default=config_file, metavar='FILE', help='configuration FILE')
     proc.add_argument('-p', '--prune', default=False, action='store_true',
-                      help='stop containers and perform system pruning before starting, and clean up artifacts after done')
+                      help='stop containers and perform system pruning before starting')
     proc.add_argument('-s', '--skip-clean', default=False, action='store_true',
                       help='skip the clean up artifacts step after done')
     proc.add_argument('-v', '--verbose', default=False, action='store_true', help='enable verbose output')

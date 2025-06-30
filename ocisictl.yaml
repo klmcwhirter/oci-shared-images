@@ -17,6 +17,16 @@
   enabled: true
   assemble: true
 
+- name: fedora-python314
+  path: fedora
+  manager: docker
+  enabled: false
+- name: fedora-python314-dx
+  path: fedora
+  manager: docker
+  enabled: false
+  assemble: false
+
 - name: fedora-dotnet
   path: fedora
   manager: docker
@@ -25,6 +35,7 @@
   path: fedora
   manager: docker
   enabled: false
+  assemble: false
 
 - name: fedora-go
   path: fedora
@@ -54,11 +65,11 @@
   path: debian
   tag: bookworm
   manager: podman
-  enabled: true
+  enabled: false
 - name: debian-dx
   path: debian
   tag: bookworm
   manager: podman
-  enabled: true
+  enabled: false
   distrobox: debian-bookworm-dx
-  assemble: true
+  assemble: false

@@ -5,7 +5,7 @@ FROM fedora-dev-base:latest
 #
 
 RUN dnf update -y && dnf install -y python3.14-devel python3.14-tkinter tk \
-    gitk  \
+    gitk \
     gcc gmp-devel mpfr-devel libmpc-devel \
     gobject-introspection-devel cairo-gobject-devel pkg-config python3-devel gtk4
 

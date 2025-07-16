@@ -1,0 +1,17 @@
+scripts:
+
+- name: enable-dev
+  is_local: False
+  options:
+    pkgs: autopep8 flake8 mypy
+
+- name: gitignore
+  is_local: False
+  options:
+    features: python
+    addons: distrobox-export,.pdm-python
+
+- name: start
+  desc: app entrypoint
+  cmd: uv run
+  is_local: True

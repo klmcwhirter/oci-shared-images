@@ -6,8 +6,6 @@ from pathlib import Path
 from pprint import pformat
 from typing import Generator
 
-from rich.pretty import pprint
-
 from ocisictl.adapters import (
     container_remove,
     container_stop,

@@ -20,7 +20,7 @@ def print_containerimage_table(imgs: list[ContainerImage], desc: str) -> None:
         image_w_tag = f'{img.name}{img_tag}'
         image = Text(image_w_tag, style='bold') if img.enabled else image_w_tag
         enabled = ':heavy_check_mark:' if img.enabled else ''
-        distrobox = Text(img.distrobox_name, style='bold') if img.assemble else img.distrobox_name
+        distrobox = Text(img.distrobox_name, style='bold') if img.enabled and img.assemble else img.distrobox_name if img.assemble else img.distrobox
         assemble = ':heavy_check_mark:' if img.assemble else ''
 
         table.add_row(image, img.path, enabled, img.manager, distrobox, assemble)

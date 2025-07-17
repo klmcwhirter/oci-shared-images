@@ -18,6 +18,7 @@ def parse_args(args: list[str]) -> AppContext:
                           help=ls_desc,
                           formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     meg = ls.add_mutually_exclusive_group(required=True)
+    meg.add_argument('--all', default=False, action='store_true', help='list all images containers')
     meg.add_argument('-a', '--assemble', default=False, action='store_true', help='list containers to assemble')
     meg.add_argument('-e', '--enabled', default=False, action='store_true', help='list images to create')
     meg.add_argument('-l', '--layers', default=False, action='store_true', help='list layers of images')

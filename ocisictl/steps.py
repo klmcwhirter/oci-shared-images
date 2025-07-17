@@ -6,6 +6,8 @@ from pathlib import Path
 from pprint import pformat
 from typing import Generator
 
+from rich.pretty import pprint
+
 from ocisictl.adapters import (
     container_remove,
     container_stop,
@@ -21,6 +23,7 @@ from ocisictl.adapters import (
     prune_system
 )
 from ocisictl.models import AppContext, ContainerImage
+from ocisictl.rich import print_containerimage_table
 from ocisictl.utils import log_entry_exit
 
 
@@ -112,15 +115,24 @@ def do_prune(ctx: AppContext) -> None:
 
 
 @log_entry_exit
+def list_all(ctx: AppContext) -> None:
+    '''Given the config file in force, list all containers'''
+    # print(pformat(ctx.config.images, width=196, compact=True, sort_dicts=False))
+    print_containerimage_table(ctx.config.images, desc='All Configured Images')
+
+
+@log_entry_exit
 def list_assemble(ctx: AppContext) -> None:
     '''Given the config file in force, list the containers to assemble'''
-    print(pformat(ctx.config.containers_to_assemble, width=196, compact=True, sort_dicts=False))
+    # print(pformat(ctx.config.containers_to_assemble, width=196, compact=True, sort_dicts=False))
+    print_containerimage_table(ctx.config.containers_to_assemble, desc='Images to Assemble')
 
 
 @log_entry_exit
 def list_enabled(ctx: AppContext) -> None:
     '''Given the config file in force, list the images to create'''
-    print(pformat(ctx.config.images_enabled, width=196, compact=True, sort_dicts=False))
+    # print(pformat(ctx.config.images_enabled, width=196, compact=True, sort_dicts=False))
+    print_containerimage_table(ctx.config.images_enabled, desc='Enabled Images')
 
 
 @log_entry_exit
@@ -164,6 +176,8 @@ def run_steps(ctx: AppContext) -> None:
     if ctx.verb == 'list':
         if ctx.list_layers:
             list_layers(ctx=ctx)
+        elif ctx.list_all:
+            list_all(ctx=ctx)
         elif ctx.list_assemble:
             list_assemble(ctx=ctx)
         elif ctx.list_enabled:

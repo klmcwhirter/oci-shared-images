@@ -91,6 +91,10 @@ class AppContext:
         return mgrs
 
     @property
+    def list_all(self) -> bool:
+        return self.args.all
+
+    @property
     def list_assemble(self) -> bool:
         return self.args.assemble
 

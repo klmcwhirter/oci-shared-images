@@ -1,17 +1,18 @@
 scripts:
 
 - name: enable-dev
-  is_local: False
+  is-local: false
   options:
     pkgs: autopep8 flake8 mypy
 
 - name: gitignore
-  is_local: False
+  is-local: false
   options:
     features: python
     addons: distrobox-export,.pdm-python
 
 - name: start
   desc: app entrypoint
-  cmd: uv run
-  is_local: True
+  use-python: false
+  cmd: uv run python -m ocisictl
+  is-local: true

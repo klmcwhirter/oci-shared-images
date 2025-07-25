@@ -1,5 +1,4 @@
-'''Adapter classes and functions used by steps'''
-
+"""Adapter classes and functions used by steps"""
 
 import os
 import shutil
@@ -24,18 +23,14 @@ def containers_running(manager: str, verbose: bool) -> list[str]:
     idkey = '.ID'
 
     if manager == 'podman':
-        idkey = ".[].Id"
+        idkey = '.[].Id'
 
-    return cmd_with_output(
-        cmd=f'{manager} ps --format json | yq -p=j {idkey} | sed \'/---/d\'',
-        verbose=verbose
-    ).splitlines()
+    return cmd_with_output(cmd=f'{manager} ps --format json | yq -p=j {idkey} | sed "/---/d"', verbose=verbose).splitlines()
 
 
 def image_build(manager: str, container_file: str, image_name: str, build_args: str, verbose: bool) -> None:
     cmd_output_to_terminal(
-        cmd=f'{_CM_OPTS}{manager} buildx build -f {container_file} -t {image_name} {build_args} .',
-        verbose=verbose
+        cmd=f'{_CM_OPTS}{manager} buildx build -f {container_file} -t {image_name} {build_args} .', verbose=verbose
     )
 
 
@@ -44,7 +39,7 @@ def image_names(manager: str, verbose: bool) -> list[str]:
     if manager == 'docker':
         cmd = f'{manager} image ls --format json | yq -p=j \'select(.Repository != "<none>") | (.Repository + ":" + .Tag)\' | sed \'/---/d;/^:$/d\' | sort'  # noqa E501
     elif manager == 'podman':
-        cmd = f'{manager} image ls --format json | yq -p=j \'.[] | select(.Names != null) | .Names[0]\' | sed \'/---/d\' | sort'
+        cmd = f'{manager} image ls --format json | yq -p=j ".[] | select(.Names != null) | .Names[0]" | sed "/---/d" | sort'
     else:
         # unsupported manager
         return []
@@ -75,8 +70,8 @@ _dbox_export = 'distrobox-export'
 
 def distrobox_assemble(manager: str, name: str, verbose: bool) -> None:
     cmd_output_to_terminal(
-        cmd=f'DBX_CONTAINER_ALWAYS_PULL=0 DBX_CONTAINER_MANAGER={manager} distrobox assemble create --replace --name {name}',  # noqa E501
-        verbose=verbose
+        cmd=f'DBX_CONTAINER_ALWAYS_PULL=0 DBX_CONTAINER_MANAGER={manager} distrobox assemble create --replace --name {name}',
+        verbose=verbose,
     )
 
 

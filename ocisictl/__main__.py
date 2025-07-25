@@ -1,5 +1,3 @@
-
-
 import sys
 
 from ocisictl.cli import parse_args

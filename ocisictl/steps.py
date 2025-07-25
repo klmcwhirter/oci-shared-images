@@ -18,7 +18,7 @@ from ocisictl.adapters import (
     patched_distrobox_copied,
     patched_distrobox_export,
     prune_buildx,
-    prune_system
+    prune_system,
 )
 from ocisictl.models import AppContext, ContainerImage
 from ocisictl.rich import print_containerimage_table
@@ -84,7 +84,7 @@ def create_image(ctx: AppContext, image: ContainerImage) -> None:
         build_args += f' --build-arg IMG={image.name.removesuffix("-dx")}'
         build_args += f' --build-arg TAG={image.tag}'
 
-        cf_suffix = "img-dx"
+        cf_suffix = 'img-dx'
 
     with changed_dir(image.path):
         with patched_distrobox_copied():
@@ -93,7 +93,8 @@ def create_image(ctx: AppContext, image: ContainerImage) -> None:
                 container_file=f'Containerfile.{cf_suffix}',
                 image_name=image.full_image_name,
                 build_args=build_args,
-                verbose=ctx.verbose)
+                verbose=ctx.verbose,
+            )
 
     logging.info(f'Creating {image.full_image_name} using {manager} ... done.')
 
@@ -114,21 +115,21 @@ def do_prune(ctx: AppContext) -> None:
 
 @log_entry_exit
 def list_all(ctx: AppContext) -> None:
-    '''Given the config file in force, list all containers'''
+    """Given the config file in force, list all containers"""
     # print(pformat(ctx.config.images, width=196, compact=True, sort_dicts=False))
     print_containerimage_table(ctx.config.images, desc='All Configured Images')
 
 
 @log_entry_exit
 def list_assemble(ctx: AppContext) -> None:
-    '''Given the config file in force, list the containers to assemble'''
+    """Given the config file in force, list the containers to assemble"""
     # print(pformat(ctx.config.containers_to_assemble, width=196, compact=True, sort_dicts=False))
     print_containerimage_table(ctx.config.containers_to_assemble, desc='Images to Assemble')
 
 
 @log_entry_exit
 def list_enabled(ctx: AppContext) -> None:
-    '''Given the config file in force, list the images to create'''
+    """Given the config file in force, list the images to create"""
     # print(pformat(ctx.config.images_enabled, width=196, compact=True, sort_dicts=False))
     print_containerimage_table(ctx.config.images_enabled, desc='Enabled Images')
 

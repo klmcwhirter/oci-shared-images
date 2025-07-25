@@ -22,7 +22,13 @@ def print_containerimage_table(imgs: list[ContainerImage], desc: str) -> None:
         enabled = ':heavy_check_mark:' if img.enabled else ''
         mgr_name = img.manager_name('docker')
         manager = Text(mgr_name, style='bold') if mgr_name != 'docker' else mgr_name
-        distrobox = Text(img.distrobox_name, style='bold') if img.enabled and img.assemble else img.distrobox_name if img.assemble else img.distrobox
+        distrobox = (
+            Text(img.distrobox_name, style='bold')
+            if img.enabled and img.assemble
+            else img.distrobox_name
+            if img.assemble
+            else img.distrobox
+        )
         assemble = ':heavy_check_mark:' if img.assemble else ''
 
         table.add_row(image, img.path, enabled, manager, distrobox, assemble)

@@ -1,4 +1,3 @@
-
 import argparse
 import logging
 import os
@@ -12,7 +11,8 @@ from yaml import Loader, load_all
 
 @dataclass
 class ContainerImage:
-    '''A single image to be created and optionally a container'''
+    """A single image to be created and optionally a container"""
+
     name: str
     path: str
     enabled: bool
@@ -41,7 +41,8 @@ class ContainerImage:
 
 @dataclass
 class AppConfig:
-    '''The application config'''
+    """The application config"""
+
     images: list[ContainerImage]
 
     @property
@@ -70,7 +71,8 @@ class AppConfig:
 
 @dataclass
 class AppContext:
-    '''The app operating context'''
+    """The app operating context"""
+
     args: argparse.Namespace
     config: AppConfig
 
@@ -124,8 +126,9 @@ class AppContext:
 
     def _setup_logging(self) -> None:
         log_level = logging.DEBUG if self.verbose else logging.INFO
-        logging.basicConfig(level=log_level, stream=sys.stdout,
-                            format='{asctime} - {module} - {levelname} - {funcName} - {message}', style='{')
+        logging.basicConfig(
+            level=log_level, stream=sys.stdout, format='{asctime} - {module} - {levelname} - {funcName} - {message}', style='{'
+        )
 
     def log(self) -> None:
         logging.debug(pformat(self, indent=0, depth=3, width=196, compact=True, sort_dicts=False))

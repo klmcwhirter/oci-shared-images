@@ -1,4 +1,3 @@
-
 import logging
 import subprocess
 from functools import wraps
@@ -25,4 +24,5 @@ def log_entry_exit(func):
         rc = func(*args, **kwargs)
         logging.debug(f'{func.__name__} done')
         return rc
+
     return wrapper

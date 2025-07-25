@@ -1,4 +1,4 @@
-'''The ocisictl command line interface'''
+"""The ocisictl command line interface"""
 
 import argparse
 
@@ -13,10 +13,7 @@ def parse_args(args: list[str]) -> AppContext:
     verbs = parser.add_subparsers(title='verbs', required=True, dest='verb', metavar='(list | process | clean)')
 
     ls_desc = 'List information about the configuration or the system'
-    ls = verbs.add_parser('list',
-                          description=ls_desc,
-                          help=ls_desc,
-                          formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    ls = verbs.add_parser('list', description=ls_desc, help=ls_desc, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     meg = ls.add_mutually_exclusive_group(required=True)
     meg.add_argument('--all', default=False, action='store_true', help='list all images containers')
     meg.add_argument('-a', '--assemble', default=False, action='store_true', help='list containers to assemble')
@@ -27,22 +24,20 @@ def parse_args(args: list[str]) -> AppContext:
     ls.add_argument('-v', '--verbose', default=False, action='store_true', help='enable verbose output')
 
     proc_desc = 'Create images / assemble containers'
-    proc = verbs.add_parser('process',
-                            description=proc_desc,
-                            help=proc_desc,
-                            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    proc = verbs.add_parser(
+        'process', description=proc_desc, help=proc_desc, formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
     proc.add_argument('-f', '--file', default=config_file, metavar='FILE', help='configuration FILE')
-    proc.add_argument('-p', '--prune', default=False, action='store_true',
-                      help='stop containers and perform system pruning before starting')
-    proc.add_argument('-s', '--skip-clean', default=False, action='store_true',
-                      help='skip the clean up artifacts step after done')
+    proc.add_argument(
+        '-p', '--prune', default=False, action='store_true', help='stop containers and perform system pruning before starting'
+    )
+    proc.add_argument('-s', '--skip-clean', default=False, action='store_true', help='skip the clean up artifacts step after done')
     proc.add_argument('-v', '--verbose', default=False, action='store_true', help='enable verbose output')
 
     clean_desc = 'Clean up images'
-    clean = verbs.add_parser('clean',
-                             description=clean_desc,
-                             help=clean_desc,
-                             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    clean = verbs.add_parser(
+        'clean', description=clean_desc, help=clean_desc, formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
     clean.add_argument('-f', '--file', default=config_file, metavar='FILE', help='configuration FILE')
     clean.add_argument('-v', '--verbose', default=False, action='store_true', help='enable verbose output')
 

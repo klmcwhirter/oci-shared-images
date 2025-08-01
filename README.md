@@ -11,11 +11,10 @@ Right before I started using bluefin I had let go of k3s and went back to using 
 Using bluefin, I finally had a reason to dive deep into using [Dev Containers in vscode](https://code.visualstudio.com/docs/devcontainers/containers). And so the experimentation began...
 
 Of the experiments I have performed so far, this one seems to offer the best balance of features and HD space utilization.
-
-- [Bluefin - use podman distrobox container in vscode](https://universal-blue.discourse.group/t/bluefin-use-podman-distrobox-container-in-vscode/6193)
-- [Bluefin - use docker distrobox container in vscode](https://universal-blue.discourse.group/t/bluefin-use-docker-distrobox-container-in-vscode/6195)
-- [**Bluefin - rely on OCI layer sharing for distrobox and devcontainer**](https://universal-blue.discourse.group/t/bluefin-rely-on-oci-layer-sharing-for-distrobox-and-devcontainer/6519)
-- [Bluefin - Using distrobox with vscode tasks](https://universal-blue.discourse.group/t/bluefin-using-distrobox-with-vscode-tasks/8448)
+- [Bluefin - use podman distrobox container in vscode](https://github.com/klmcwhirter/stuff/wiki/Bluefin---use-podman-distrobox-container-in-vscode)
+- [Bluefin - use docker distrobox container in vscode](https://github.com/klmcwhirter/stuff/wiki/Bluefin---use-docker-distrobox-container-in-vscode)
+- [**Bluefin - rely on OCI layer sharing for distrobox and devcontainer**](https://github.com/klmcwhirter/stuff/wiki/Bluefin---rely-on-OCI-layer-sharing-for-distrobox-and-devcontainer)
+- [Bluefin - Using distrobox with vscode tasks](https://github.com/klmcwhirter/stuff/wiki/Bluefin---Using-distrobox-with-vscode-tasks)
 
 > [!IMPORTANT]
 >
@@ -357,8 +356,8 @@ There are (at least) 2 basic assumptions being made by the sample artifacts.
 > That frees me up to do `docker system prune -af --volumes` at any time without disturbing my _system_ containers.
 
 ## References
-1. https://universal-blue.discourse.group/t/bluefin-use-docker-distrobox-container-in-vscode/6195/1
-2. https://universal-blue.discourse.group/t/bluefin-use-podman-distrobox-container-in-vscode/6193/1
+1. https://github.com/klmcwhirter/stuff/wiki/Bluefin---use-docker-distrobox-container-in-vscode
+2. https://github.com/klmcwhirter/stuff/wiki/Bluefin---use-podman-distrobox-container-in-vscode
 3. https://code.visualstudio.com/docs/devcontainers/containers
 4. https://code.visualstudio.com/api/advanced-topics/remote-extensions#debugging-in-a-custom-development-container
 5. https://github.com/ublue-os/toolboxes

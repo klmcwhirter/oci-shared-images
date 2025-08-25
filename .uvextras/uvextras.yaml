@@ -11,6 +11,12 @@ scripts:
     features: python
     addons: distrobox-export,.pdm-python
 
+- name: process
+  desc: build images and assemble distrboxen
+  use-python: false
+  cmd: uv run python -m ocisictl process
+  is-local: true
+
 - name: start
   desc: app entrypoint
   use-python: false

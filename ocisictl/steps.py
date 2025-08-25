@@ -60,6 +60,10 @@ def clean_images(ctx: AppContext) -> None:
         logging.info(f'Cleaning {image.full_image_name} with {manager} ... done.')
 
     for manager in ctx.managers:
+        if ctx.skip_podman and manager == 'podman':
+            logging.info(f'Skipping pruning buildx with {manager}')
+            continue
+
         logging.info(f'Pruning buildx with {manager}')
         prune_buildx(manager=manager, verbose=ctx.verbose)
 
@@ -102,6 +106,10 @@ def create_image(ctx: AppContext, image: ContainerImage) -> None:
 @log_entry_exit
 def do_prune(ctx: AppContext) -> None:
     for manager in ctx.managers:
+        if ctx.skip_podman and manager == 'podman':
+            logging.info(f'Skipping shutting down and pruning using {manager} ...')
+            continue
+
         logging.info(f'Shutting down and pruning using {manager} ...')
 
         for c in containers_running(manager=manager, verbose=ctx.verbose):

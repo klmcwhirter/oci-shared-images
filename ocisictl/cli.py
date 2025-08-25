@@ -29,8 +29,9 @@ def parse_args(args: list[str]) -> AppContext:
     )
     proc.add_argument('-f', '--file', default=config_file, metavar='FILE', help='configuration FILE')
     proc.add_argument(
-        '-p', '--prune', default=False, action='store_true', help='stop containers and perform system pruning before starting'
+        '-p', '--prune', default=False, action='store_true', help='stop containers and perform system pruning before starting; if --podman is not set skip it'
     )
+    proc.add_argument('--podman', default=False, action='store_true', help='clean up buildx artifacts for podman after done')
     proc.add_argument('-s', '--skip-clean', default=False, action='store_true', help='skip the clean up artifacts step after done')
     proc.add_argument('-v', '--verbose', default=False, action='store_true', help='enable verbose output')
 
@@ -39,6 +40,7 @@ def parse_args(args: list[str]) -> AppContext:
         'clean', description=clean_desc, help=clean_desc, formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     clean.add_argument('-f', '--file', default=config_file, metavar='FILE', help='configuration FILE')
+    clean.add_argument('--podman', default=False, action='store_true', help='clean up buildx artifacts for podman after done')
     clean.add_argument('-v', '--verbose', default=False, action='store_true', help='enable verbose output')
 
     pargs = parser.parse_args(args=args)

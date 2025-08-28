@@ -21,7 +21,3 @@ dev = [
 
 [tool.isort]
 multi_line_output = 3
-
-[tool.pyright]
-typeCheckingMode = "off"
-ignore = ["*"]

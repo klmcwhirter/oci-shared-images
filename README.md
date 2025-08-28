@@ -274,25 +274,22 @@ verbs:
 ```
 
 ```
-$ ./ocisictl.sh list --help
-
-usage: python -m ocisictl list [-h] [-f FILE] (-a | -e | -l) [-v]
+usage: python3 -m ocisictl list [-h] (--all | -a | -e | -l) [-f FILE] [-v]
 
 List information about the configuration or the system
 
 options:
   -h, --help       show this help message and exit
-  -f, --file FILE  configuration FILE (default: ocisictl.yaml)
+  --all            list all images containers (default: False)
   -a, --assemble   list containers to assemble (default: False)
   -e, --enabled    list images to create (default: False)
   -l, --layers     list layers of images (default: False)
+  -f, --file FILE  configuration FILE (default: ocisictl.yaml)
   -v, --verbose    enable verbose output (default: False)
 ```
 
 ```
-$ ./ocisictl.sh process --help
-
-usage: python -m ocisictl process [-h] [-f FILE] [-p] [-s] [-v]
+usage: python3 -m ocisictl process [-h] [-f FILE] [-p] [--podman] [-s] [-v]
 
 Create images / assemble containers
 
@@ -300,23 +297,21 @@ options:
   -h, --help        show this help message and exit
   -f, --file FILE   configuration FILE (default: ocisictl.yaml)
   -p, --prune       stop containers and perform system pruning before
-                    starting, and clean up artifacts after done (default:
-                    False)
-  -s, --skip-clean  skip the clean up artifacts step after done (default:
-                    False)
+                    starting; if --podman is not set skip it (default: False)
+  --podman          clean up buildx artifacts for podman after done (default: False)
+  -s, --skip-clean  skip the clean up artifacts step after done (default: False)
   -v, --verbose     enable verbose output (default: False)
 ```
 
 ```
-$ ./ocisictl.sh clean --help
-
-usage: python -m ocisictl clean [-h] [-f FILE] [-v]
+usage: python3 -m ocisictl clean [-h] [-f FILE] [--podman] [-v]
 
 Clean up images
 
 options:
   -h, --help       show this help message and exit
   -f, --file FILE  configuration FILE (default: ocisictl.yaml)
+  --podman         clean up buildx artifacts for podman after done (default: False)
   -v, --verbose    enable verbose output (default: False)
 ```
 
@@ -345,7 +340,7 @@ There are (at least) 2 basic assumptions being made by the sample artifacts.
 
    If you are using [bluefin-dx](https://docs.projectbluefin.io/bluefin-dx/#step-2-add-yourself-to-the-right-groups) simply use `ujust dx-mode` and reboot.
 
-2. The base image in use is able to perform the commands in [./fedora/Containerfile.img-dx](./fedora/Containerfile.img-dx) and  [./debian/Containerfile.img-dx](./debian/Containerfile.img-dx) if debian is left `enabled`.
+2. The base image in use is able to perform the commands in [./fedora/Containerfile.img-dx](./fedora/Containerfile.img-dx) and  [./debian/Containerfile.img-dx](./debian/Containerfile.img-dx) if debian is `enabled`.
 
 > In addition to those, if you are using `docker` you may want to add `export DBX_CONTAINER_MANAGER=docker` to your .bashrc (or equiv.).
 > 
@@ -354,6 +349,15 @@ There are (at least) 2 basic assumptions being made by the sample artifacts.
 > I do. I am a container junky. Having both `docker` and `podman` gives me separate namespaces for dev stuff (docker) vs system stuff (podman) where I need stability.
 > 
 > That frees me up to do `docker system prune -af --volumes` at any time without disturbing my _system_ containers.
+
+> [!IMPORTANT]
+> 
+> Although I currently am [patching distrobox-export](./distrobox-export-1.8.1.2.patch) to add support for multiple container managers, 
+> as of Aug 2025 I have gotten word from the distrobox project that they do not plan to support that feature.
+> 
+> So the use of the patch should be considered deprecated and will be removed soon.
+> 
+> See [distrobox/issues/1758](https://github.com/89luca89/distrobox/issues/1758) for more.
 
 ## References
 1. https://github.com/klmcwhirter/stuff/wiki/Bluefin---use-docker-distrobox-container-in-vscode

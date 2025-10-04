@@ -1,9 +1,6 @@
 FROM ghcr.io/ublue-os/fedora-toolbox:latest
 
 RUN dnf update -y && \
-dnf install -y sqlite3 sqlite-analyzer git vim tmux fastfetch fzf zoxide nodejs uv && \
-rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
-echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | tee /etc/yum.repos.d/vscode.repo > /dev/null && \
-dnf update -y && dnf install -y code
+dnf install -y sqlite3 sqlite-analyzer git vim tmux fastfetch fzf zoxide nodejs uv
 
 COPY ./distrobox-export /usr/bin

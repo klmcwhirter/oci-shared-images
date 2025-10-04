@@ -30,6 +30,8 @@ RUN dnf install -y \
 # build cpython from the main or 3.14 branch
 # ~/src/github.com/klmcwhirter/python-projects/_klmcw_build_cpython.sh
 
+# pip3.14 install gmpy2
+# pip3.14 install mpmath[gmpy2]
 # pip3.14 install pycairo
 # pip3.14 install PyGObject
 

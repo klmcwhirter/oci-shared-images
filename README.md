@@ -75,7 +75,9 @@ This is just an example of my current setup. It will change drastically over tim
 ```
         ghcr.io/ublue-os/fedora-toolbox:latest
                         |
-                fedora-dev-base                   includes git, vscode, emacs, info, vim, tmux, fastfetch, fzf, zoxide, jq, yq
+                fedora-dev-base                   includes git, emacs, info, vim, tmux, fastfetch, fzf, zoxide, jq, yq
+                        |
+                fedora-dev-code                   includes vscode
                         |
                 fedora-python                     includes py313, py314, py314t, tkinter, tk, gitk
                /        |     \
@@ -162,7 +164,7 @@ podman - localhost/debian-dx:bookworm
 </details>
 
 ## Dev Container Specific Concerns
-> Note that `vscode` is installed in `fedora-dev-base` for `vscode-server` primarily. This is required by the **Dev Containers** `vscode` extension.
+> Note that `vscode` is installed in `fedora-dev-code` for `vscode-server` primarily. This is required by the **Dev Containers** `vscode` extension.
 > 
 > When switchng projects (and devcontainer) that needs different extensions I find I need to `rm -fr ~/.vscode-server` before creating the new devcontainer.
 > This is a downside of mounting my `$HOME` directory that I live with.
@@ -355,7 +357,7 @@ There are (at least) 2 basic assumptions being made by the sample artifacts.
 > Although I currently am [patching distrobox-export](./distrobox-export-1.8.1.2.patch) to add support for multiple container managers, 
 > as of Aug 2025 I have gotten word from the distrobox project that they do not plan to support that feature.
 > 
-> So the use of the patch should be considered deprecated and will be removed soon.
+> So the use of the patch should be considered deprecated and will be removed soon - when the next distrobox version is released.
 > 
 > See [distrobox/issues/1758](https://github.com/89luca89/distrobox/issues/1758) for more.
 

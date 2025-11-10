@@ -15,10 +15,8 @@ from ocisictl.adapters import (
     image_names,
     image_remove,
     list_image_layers,
-    patched_distrobox_copied,
-    patched_distrobox_export,
     prune_buildx,
-    prune_system,
+    prune_system
 )
 from ocisictl.models import AppContext, ContainerImage
 from ocisictl.rich import print_containerimage_table
@@ -91,14 +89,13 @@ def create_image(ctx: AppContext, image: ContainerImage) -> None:
         cf_suffix = 'img-dx'
 
     with changed_dir(image.path):
-        with patched_distrobox_copied():
-            image_build(
-                manager=manager,
-                container_file=f'Containerfile.{cf_suffix}',
-                image_name=image.full_image_name,
-                build_args=build_args,
-                verbose=ctx.verbose,
-            )
+        image_build(
+            manager=manager,
+            container_file=f'Containerfile.{cf_suffix}',
+            image_name=image.full_image_name,
+            build_args=build_args,
+            verbose=ctx.verbose,
+        )
 
     logging.info(f'Creating {image.full_image_name} using {manager} ... done.')
 
@@ -163,9 +160,8 @@ def process(ctx: AppContext) -> None:
     else:
         logging.warning(f'Skipping prune step - prune={ctx.prune}')
 
-    with patched_distrobox_export(verbose=ctx.verbose):
-        for img in ctx.config.images_enabled:
-            create_image(ctx=ctx, image=img)
+    for img in ctx.config.images_enabled:
+        create_image(ctx=ctx, image=img)
 
     logging.info('allow system to coallesce')
     time.sleep(5)

@@ -2,5 +2,3 @@ FROM ghcr.io/ublue-os/fedora-toolbox:latest
 
 RUN dnf update -y && \
 dnf install -y sqlite3 sqlite-analyzer git vim tmux fastfetch fzf zoxide nodejs uv
-
-COPY ./distrobox-export /usr/bin

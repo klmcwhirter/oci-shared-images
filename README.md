@@ -354,10 +354,10 @@ There are (at least) 2 basic assumptions being made by the sample artifacts.
 
 > [!IMPORTANT]
 > 
-> Although I currently am [patching distrobox-export](./distrobox-export-1.8.1.2.patch) to add support for multiple container managers, 
-> as of Aug 2025 I have gotten word from the distrobox project that they do not plan to support that feature.
+> Although I was patching distrobox-export to add support for multiple container managers, 
+> as of Aug 2025 I received word from the distrobox project that they do not plan to support that feature.
 > 
-> So the use of the patch should be considered deprecated and will be removed soon - when the next distrobox version is released.
+> So the use of the patch has been removed because version 1.8.2 of distrobox was released.
 > 
 > See [distrobox/issues/1758](https://github.com/89luca89/distrobox/issues/1758) for more.
 

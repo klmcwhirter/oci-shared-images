@@ -1,9 +1,5 @@
 """Adapter classes and functions used by steps"""
 
-import os
-import shutil
-from contextlib import contextmanager
-from typing import Generator
 
 from ocisictl.utils import cmd_output_to_terminal, cmd_with_output
 
@@ -65,38 +61,8 @@ def prune_system(manager: str, verbose: bool) -> None:
     cmd_output_to_terminal(cmd=f'{manager} buildx prune -af', verbose=verbose)
 
 
-_dbox_export = 'distrobox-export'
-
-
 def distrobox_assemble(manager: str, name: str, verbose: bool) -> None:
     cmd_output_to_terminal(
         cmd=f'DBX_CONTAINER_ALWAYS_PULL=0 DBX_CONTAINER_MANAGER={manager} distrobox assemble create --replace --name {name}',
         verbose=verbose,
     )
-
-
-@contextmanager
-def patched_distrobox_copied() -> Generator[None]:
-    try:
-        shutil.copy2(f'../{_dbox_export}', _dbox_export)
-
-        yield
-    finally:
-        # remove it
-        os.unlink(_dbox_export)
-
-
-@contextmanager
-def patched_distrobox_export(verbose: bool) -> Generator[None]:
-    try:
-        # patch it
-
-        # uri='https://raw.githubusercontent.com/89luca89/distrobox/refs/tags/1.8.1.2/distrobox-export'
-        # curl -sO ${uri}
-        cmd_output_to_terminal(cmd=f'cp -f $(which {_dbox_export}) .', verbose=verbose)
-        cmd_output_to_terminal(cmd=f'patch {_dbox_export} {_dbox_export}-1.8.1.2.patch', verbose=verbose)
-
-        yield
-    finally:
-        # remove it
-        os.unlink(_dbox_export)

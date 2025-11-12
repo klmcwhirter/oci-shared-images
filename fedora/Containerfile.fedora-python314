@@ -21,7 +21,7 @@ RUN dnf -y builddep python3
 RUN dnf install -y \
     clang clang-devel cmake llvm llvm-devel lld lld-devel \
     gcc gcc-c++ gdb lzma glibc-devel libstdc++-devel openssl-devel \
-    readline-devel zlib-devel libffi-devel bzip2-devel xz-devel \
+    readline-devel zlib-devel libzstd-devel libffi-devel bzip2-devel xz-devel \
     libjpeg-turbo-devel \
     sqlite sqlite-devel sqlite-libs libuuid-devel gdbm-libs perf \
     expat expat-devel mpdecimal python3-pip
@@ -30,8 +30,14 @@ RUN dnf install -y \
 # build cpython from the main or 3.14 branch
 # ~/src/github.com/klmcwhirter/python-projects/_klmcw_build_cpython.sh
 
+# django-admin and sqlformat (from sqlparse)
+# pip3.14 install django
+
+# optimized multi-precision math libraries
 # pip3.14 install gmpy2
-# pip3.14 install mpmath[gmpy2]
+# pip3.14 install mpmath[gmpy]
+
+# GNOME development
 # pip3.14 install pycairo
 # pip3.14 install PyGObject
 

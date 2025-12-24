@@ -2,6 +2,6 @@ FROM fedora-dev-base:latest
 # FROM fedora-dev-code:latest
 
 RUN dnf update -y && dnf install -y python3 python3-isort python3-tkinter \
-    python3.14-devel python3.14-tkinter tk \
+    python3.14-devel python3.14-tkinter python3.14-idle tk \
     gitk \
     gcc gmp-devel mpfr-devel libmpc-devel

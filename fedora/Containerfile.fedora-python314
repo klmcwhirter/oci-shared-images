@@ -6,15 +6,14 @@ FROM fedora-dev-base:latest
 
 RUN dnf update -y && dnf install -y python3.14-devel python3.14-tkinter tk \
     gitk \
-    gcc gmp-devel mpfr-devel libmpc-devel \
-    gobject-introspection-devel cairo-gobject-devel pkg-config python3-devel gtk4
+    gcc gmp-devel mpfr-devel libmpc-devel
 
-# gmp-devel mpfr-devel libmpc-devel are for gmpy2 pip module
-# gcc gobject-introspection-devel cairo-gobject-devel pkg-config python3-devel gtk4 are for pycairo, PyGObject
+# gcc gmp-devel mpfr-devel libmpc-devel are for gmpy2 pip module
 
 # https://devguide.python.org/getting-started/setup-building/#build-dependencies
 RUN dnf install -y git pkg-config \
-   dnf-plugins-core  # install this to use 'dnf builddep'
+    python3-devel \
+    dnf-plugins-core  # install this to use 'dnf builddep'
 
 RUN dnf -y builddep python3
 
@@ -30,14 +29,22 @@ RUN dnf install -y \
 # build cpython from the main or 3.14 branch
 # ~/src/github.com/klmcwhirter/python-projects/_klmcw_build_cpython.sh
 
-# django-admin and sqlformat (from sqlparse)
-# pip3.14 install django
+# do not need this image for django-admin:
+# uv tool install git+https://github.com/django/django.git@stable/5.2.x
 
-# optimized multi-precision math libraries
+# optimized multi-precision math libraries - still NO pre-built 3.14 wheel as of 2025-11-25
 # pip3.14 install gmpy2
 # pip3.14 install mpmath[gmpy]
 
-# GNOME development
-# pip3.14 install pycairo
-# pip3.14 install PyGObject
+
+##------------------------------------ *** DEPRECATED *** ------------------------------------
+## dnf deps:
+## gobject-introspection-devel cairo-gobject-devel pkg-config gtk4 are for pycairo, PyGObject
+
+## django-admin and sqlformat (from sqlparse) - there are pre-built 3.14 wheels as of 2025-11-05
+## pip3.14 install django
+
+## GNOME development - bluefin 43 contains this by default
+## pip3.14 install pycairo
+## pip3.14 install PyGObject
 

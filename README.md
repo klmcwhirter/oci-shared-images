@@ -79,7 +79,7 @@ This is just an example of my current setup. It will change drastically over tim
                         |
                 fedora-dev-code                   includes vscode
                         |
-                fedora-python                     includes py313, py314, py314t, tkinter, tk, gitk
+                fedora-python                     includes py314, idle314, tkinter, tk, gitk
                /        |     \
               /         |     fedora-zig:0.14.0   includes clang, llvm, cmake, zig, zls
              /          |           \

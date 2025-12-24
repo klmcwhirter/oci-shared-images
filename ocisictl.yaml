@@ -10,7 +10,7 @@
 - name: fedora-dev-code
   path: fedora
   manager: docker
-  enabled: true
+  enabled: false
 
 - name: fedora-python
   path: fedora

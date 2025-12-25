@@ -3,4 +3,4 @@
 FROM quay.io/fedora/fedora:43-x86_64
 
 RUN dnf update -y && \
-dnf install -y sqlite3 sqlite-analyzer git vim tmux fastfetch fzf zoxide nodejs uv
+dnf install -y bash-completion sqlite3 sqlite-analyzer git vim tmux fastfetch fzf zoxide nodejs uv

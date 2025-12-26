@@ -118,7 +118,7 @@ class AppContext:
 
     @property
     def skip_podman(self) -> bool:
-        return hasattr(self.args, 'podman') and not self.args.podman
+        return hasattr(self.args, 'skip_podman') and self.args.skip_podman
 
     @property
     def verb(self) -> str:

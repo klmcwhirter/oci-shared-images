@@ -54,11 +54,12 @@ def list_image_layers(manager: str, image_name: str, verbose: bool) -> None:
 
 
 def prune_buildx(manager: str, verbose: bool) -> None:
-    cmd_output_to_terminal(cmd=f'{manager} system prune -af --volumes', verbose=verbose)
+    cmd_output_to_terminal(cmd=f'{manager} buildx prune -af', verbose=verbose)
 
 
 def prune_system(manager: str, verbose: bool) -> None:
-    cmd_output_to_terminal(cmd=f'{manager} buildx prune -af', verbose=verbose)
+    cm_opts = '--build' if manager == 'podman' else ''
+    cmd_output_to_terminal(cmd=f'{manager} system prune -af --volumes {cm_opts}', verbose=verbose)
 
 
 def distrobox_assemble(manager: str, name: str, verbose: bool) -> None:

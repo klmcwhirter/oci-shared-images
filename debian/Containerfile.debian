@@ -1,6 +1,6 @@
 FROM ghcr.io/ublue-os/debian-toolbox:latest
 
+LABEL "dev.dbox"="true"
+
 RUN apt-get update -y && \
 apt-get install -y git vim tmux fzf zoxide nodejs jq yq  # no fastfetch
-
-COPY ./distrobox-export /usr/bin

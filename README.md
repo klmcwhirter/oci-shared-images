@@ -1,6 +1,8 @@
-# Bluefin - rely on OCI layer sharing for distrobox and devcontainer
+# Bluefin - rely on OCI layer sharing for distrobox
 
  [![project bluefin](./docs/project-bluefin.svg)](https://projectbluefin.io/)
+
+_See [tag docker-devcontainer](https://github.com/klmcwhirter/oci-shared-images/tree/docker-devcontainer) to see the last commit where docker / devcontainer support was the default._
 
 As I began using bluefin on my production laptop I was really challenged to rethink my assumptions on how to use and manage a development linux workstation.
 
@@ -13,8 +15,9 @@ Using bluefin, I finally had a reason to dive deep into using [Dev Containers in
 Of the experiments I have performed so far, this one seems to offer the best balance of features and HD space utilization.
 - [Bluefin - use podman distrobox container in vscode](https://github.com/klmcwhirter/stuff/wiki/Bluefin---use-podman-distrobox-container-in-vscode)
 - [Bluefin - use docker distrobox container in vscode](https://github.com/klmcwhirter/stuff/wiki/Bluefin---use-docker-distrobox-container-in-vscode)
-- [**Bluefin - rely on OCI layer sharing for distrobox and devcontainer**](https://github.com/klmcwhirter/stuff/wiki/Bluefin---rely-on-OCI-layer-sharing-for-distrobox-and-devcontainer)
+- [Bluefin - rely on OCI layer sharing for distrobox and devcontainer](https://github.com/klmcwhirter/stuff/wiki/Bluefin---rely-on-OCI-layer-sharing-for-distrobox-and-devcontainer)
 - [Bluefin - Using distrobox with vscode tasks](https://github.com/klmcwhirter/stuff/wiki/Bluefin---Using-distrobox-with-vscode-tasks)
+- **Bluefin - rely on OCI layer sharing for distrobox with podman (no dev containers)**
 
 > [!IMPORTANT]
 >
@@ -44,10 +47,10 @@ Of the experiments I have performed so far, this one seems to offer the best bal
 
 As a developer using one of the bluefin-dx bootc images, I would like:
 
-- a set of OCI images that can be used for both distroboxen and dev containers
+- a set of OCI images that can be used for both distroboxen and (optionally) dev containers
 - manage the versions of tool chains between development projects as they are encountered in a single place
 	- e.g., the version of `zig` should be the same in a `devcontainer` and corresponding `distrobox`
-	- but multiple versions of `zig` can be accomplished with multiple image tags (e.g., `0.13` vs `nightly`)
+	- but multiple versions of `zig` can be accomplished with multiple image tags (e.g., `0.14.0` vs `nightly`)
 	- the version is managed by changing the value of a single ARG or shell variable (as appropriate)
 - such that most of the layers (think HD space utilization) will be shared between the `distrobox` and `devcontainer`
 - help avoid *host layering* and the need for *custom OS image*
@@ -57,35 +60,36 @@ Tools, libraries, etc. could be installed in different locations for varying rea
 
 | Where             | Proposed Policy |
 | -- | --- |
-| ~~Custom Image~~ | Avoid as this is expensive (time, cloud resources) and wasteful as it should not be needed - I like bluefin |
+| ~~Custom Image~~ | Avoid as this is expensive (time, cloud resources) and wasteful as it should not be needed to meet these NFRs |
 | ~~Host Layering~~ | Avoid at all cost as this defeats the purpose of the deployment model used by bluefin, and can complicate updates |
 | Flatpak           | Apps that run close to the host - *not pertinent to this experiment* |
+| homebrew          | simple CLI tools that run on the host - *not pertinent to this experiment* |
 | `$HOME`           | If needed on host as well as in containers<br>- where versioning roughly matches that of the host OS package version (meaning version available in Fedora WS in my case)<br>- can also be used in situations where a specific version needs to be built from source; tested close to the metal as well as in containers<br>- or tool is needed on host as well as containers (e.g., installed via `curl` script)<br>- typically installed with `PREFIX=~/.local` or equiv. |
 | Base Image(s)     | All tools, libraries, etc. that are needed in a majority of containers<br>- can install multiple tool versions (with unique names or install locations)<br>- where versioning is typically at pace with image OS package(s)<br>- to maximize layer reuse |
-| Other Images      | as needed for projects<br>-separate image tags per tool version - e.g., zig `0.13` vs `nightly`<br>- contains only dependencies for that tool env<br>- built from source or installed with OS (or other) package manager, or `curl` deployment script |
+| Other Images      | as needed for projects<br>-separate image tags per tool version - e.g., zig `0.14.0` vs `nightly`<br>- contains only dependencies for that tool env<br>- built from source or installed with OS (or other) package manager, or `curl` deployment script |
 | ~~`-dx` layer~~   | customization is **N/A**<br>- only contains UID / GID mapping to support `$HOME` bind mount<br>- always the last layer<br>- kept as light as possible because these layers are not shared |
-| ~~Distrobox~~     | avoid - defer to OCI images |
+| ~~distrobox.ini~~    | avoid - defer to OCI images |
 | Dev Container     | avoid if can, but flexibility is available<br>- specialized tool version for individual projects; vscode extensions, etc.<br>  - typically not shared across repos / branches<br>- or where cloned repo already contains .devcontainer spec<br>- much less layer sharing |
 
 ## Image Hierarchy
-This is just an example of my current setup. It will change drastically over time and yours, undoubtedly, will be different.
+This is just an example of my early setup. It will change drastically over time, and yours undoubtedly, will be different.
 
 > If multiple top-level images are needed, then the result will be multiple hierarchies. Try to avoid that complexity; extra HD space consumption. But the flexibility is available if needed.
 
 ```
-        ghcr.io/ublue-os/fedora-toolbox:latest
+        quay.io/fedora/fedora:43-x86_64
                         |
-                fedora-dev-base                   includes git, emacs, info, vim, tmux, fastfetch, fzf, zoxide, jq, yq
+                fedora-dev-base                   includes git, gitk, vim, tmux, fastfetch, fzf, zoxide, jq, yq, sqlite3, sqlite-analyzer
                         |
                 fedora-dev-code                   includes vscode
                         |
-                fedora-python                     includes py314, idle314, tkinter, tk, gitk
+                fedora-python                     includes python3.14, python3.14-devel, gmp-devel, mpfr-devel
                /        |     \
               /         |     fedora-zig:0.14.0   includes clang, llvm, cmake, zig, zls
              /          |           \
     fedora-go           |            |            includes golang, gopls
        |                |            |
-fedora-go-dx fedora-python-dx  fedora-zig-dx      adds USER, GROUP - built with Containerfile.img-dx with IMG and USER build args
+fedora-go-dx fedora-python-dx  fedora-zig-14-dx   adds USER, GROUP - built with Containerfile.img-dx with IMG and USER build args
 ```
 
 ## Guiding Principles
@@ -93,7 +97,7 @@ fedora-go-dx fedora-python-dx  fedora-zig-dx      adds USER, GROUP - built with 
 2. Keep things that are specific (especially version specific) lower in the hierarchy
 3. The final layers cannot be shared (`-dx` layers) but are built using a common parameterized build ([Containerfile.img-dx](./fedora/Containerfile.img-dx)) for repeatability
 4. Both `distrobox` and `devcontainer` use `fedora-*-dx` images and bind mount `$HOME` dir.
-5. All activities that mutate the file system are constrained to `$HOME`, `/tmp`, etc. to eliminate OCI image layer Copy-on-Write (CoW) operations.
+5. All activities that mutate the file system are constrained to bind mounted dirs - e.g., `$HOME`, `/tmp`, etc. - to eliminate OCI image layer Copy-on-Write (CoW) operations.
 6. Images and containers are periodically re-created to:
 	- update container internals efficiently
 	- clean up no longer needed containers, images, volumes
@@ -101,7 +105,7 @@ fedora-go-dx fedora-python-dx  fedora-zig-dx      adds USER, GROUP - built with 
 
 ## Amount of Reusability
 
-The layers from `ghcr.io/ublue-os/fedora-toolbox:latest`, `fedora-dev-base` and `fedora-python` are all shared. The rest are not (and should not be). If the lifetime of the images and containers are managed as projects become active / deferred then HD utilization will be minimized over time.
+The layers from `quay.io/fedora/fedora:43-x86_64`, `fedora-dev-base` and `fedora-python` are all shared. The rest are not (and should not be). If the lifetime of the images and containers are managed as projects become active / deferred then HD utilization will be minimized over time.
 
 <details>
 <summary>Expand to see how layers are shared</summary>
@@ -109,36 +113,25 @@ The layers from `ghcr.io/ublue-os/fedora-toolbox:latest`, `fedora-dev-base` and 
 ```
 $ ./ocisictl.sh list --layers
 
-docker - fedora-dev-base:latest
-- sha256:8aa1535203f2a74c605e30406aea2a4e5df9e6ed0e4343a2df9d3d97f0d2d60b
-- sha256:cc6437ae47f7b2ae16ba45604edc5f63b274ca2d00303a4b2821f237bc03db20
----
-- sha256:59a8d00200c9c1611119f7fdf63eac0dd0f1621b69748b329051002aebb8d4e3
-- sha256:1ebd0393e1601d812744b5d5cf1f171e56ad1353914fac54f11429e63d58077c
+podman - localhost/fedora-dev-base:latest
+- sha256:6fe6b312a4a1752161c816206ef792c0eef2113b9e2f546a78bb7c58708e7348
+- sha256:6cc74c47a240680c5c38efb8cc2272425af1e3c0e12ac95b718dc75f830fc1c9
 
-docker - fedora-python-dx:latest
-- sha256:8aa1535203f2a74c605e30406aea2a4e5df9e6ed0e4343a2df9d3d97f0d2d60b
-- sha256:cc6437ae47f7b2ae16ba45604edc5f63b274ca2d00303a4b2821f237bc03db20
----
-- sha256:59a8d00200c9c1611119f7fdf63eac0dd0f1621b69748b329051002aebb8d4e3
-- sha256:1ebd0393e1601d812744b5d5cf1f171e56ad1353914fac54f11429e63d58077c
-- sha256:4ab523a234e0d388e15cbcb9f5e3dcea0c6a2591a6b44a41df975fafae0fe592
----
-- sha256:0f2d8438515715cef586a3f83e05cd2a3d29c0adfd4072949cee7b7535d2e981
-- sha256:fd9b2541960ca09c0f13e658510a4e65ce777bde3147a33ce561e11d95451ac1
-- sha256:4c5aca3e929a2e100cbc46eeb2332f5ab7cbfa88a32f80c21931929e84b2740d
+podman - localhost/fedora-python-dx:latest
+- sha256:6fe6b312a4a1752161c816206ef792c0eef2113b9e2f546a78bb7c58708e7348
+- sha256:6cc74c47a240680c5c38efb8cc2272425af1e3c0e12ac95b718dc75f830fc1c9
+- sha256:fd79ffab850aa70c925e7f71af7e5045505724f2535409e220c86d228b8577eb
+- sha256:39c0313e9c506dd2b8802c992b9b4f76945b62b88063023ee821bd5b8dea3b1c
+- sha256:e4b5dc28fd64ff68c327f6fedd3e99e6322ebe19d309098ceda91be4286d9515
 
-docker - fedora-python:latest
-- sha256:8aa1535203f2a74c605e30406aea2a4e5df9e6ed0e4343a2df9d3d97f0d2d60b
-- sha256:cc6437ae47f7b2ae16ba45604edc5f63b274ca2d00303a4b2821f237bc03db20
----
-- sha256:59a8d00200c9c1611119f7fdf63eac0dd0f1621b69748b329051002aebb8d4e3
-- sha256:1ebd0393e1601d812744b5d5cf1f171e56ad1353914fac54f11429e63d58077c
-- sha256:4ab523a234e0d388e15cbcb9f5e3dcea0c6a2591a6b44a41df975fafae0fe592
+podman - localhost/fedora-python:latest
+- sha256:6fe6b312a4a1752161c816206ef792c0eef2113b9e2f546a78bb7c58708e7348
+- sha256:6cc74c47a240680c5c38efb8cc2272425af1e3c0e12ac95b718dc75f830fc1c9
+- sha256:fd79ffab850aa70c925e7f71af7e5045505724f2535409e220c86d228b8577eb
 
-docker - ghcr.io/ublue-os/fedora-toolbox:latest
-- sha256:8aa1535203f2a74c605e30406aea2a4e5df9e6ed0e4343a2df9d3d97f0d2d60b
-- sha256:cc6437ae47f7b2ae16ba45604edc5f63b274ca2d00303a4b2821f237bc03db20
+podman - quay.io/fedora/fedora:43-x86_64
+- sha256:6fe6b312a4a1752161c816206ef792c0eef2113b9e2f546a78bb7c58708e7348
+
 
 podman - ghcr.io/ublue-os/debian-toolbox:latest
 - sha256:2f7436e79a0bc6cdec6536da54ae6a5863c8e3b5f145e0f8ac0b96306baddbc9
@@ -202,11 +195,15 @@ When using the `fedora-*-dx` images in a devcontainer please make sure to do the
 
 </details>
 
-> Note that the Microsoft [*templates*](https://containers.dev/templates) and [*features*](https://containers.dev/features) are based on Ubuntu and not Fedora. So please do not expect them to work with the images described here whose base image is `ghcr.io/ublue-os/fedora-toolbox:latest`.
+> Note that the Microsoft [*templates*](https://containers.dev/templates) and [*features*](https://containers.dev/features) are based on Ubuntu and not Fedora. So please do not expect them to work with the images described here whose base image is `quay.io/fedora/fedora:43-x86_64`.
 > 
 > Since my goal is to minimize duplication and HD space utilization I am not heading down that path. Although the idea is good for a sizeable organization to share working image snippets.
 > 
 > I am going to rely on parameterized Containerfiles as a means of sharing work - e.g., [Containerfile.img-dx](./fedora/Containerfile.img-dx).
+
+While support for dev containers remains in `ocisictl` (for now), because of the downsides mentioned, I am moving to avoid using dev containers.
+
+_See [tag docker-devcontainer](https://github.com/klmcwhirter/oci-shared-images/tree/docker-devcontainer) to see the last commit where docker / devcontainer support was the default._
 
 ## Podman Distrobox Compatibility
 
@@ -225,6 +222,10 @@ DBX_CONTAINER_ALWAYS_PULL=0 distrobox assemble create --replace --name fedora-py
 ```
 
 I am not doing that because I am focused on minimizing duplication and HD space utilization.
+
+While basic support for docker remains in `ocisictl` (for now), because of the aforementioned downsides, I am moving to use podman only.
+
+_See [tag docker-devcontainer](https://github.com/klmcwhirter/oci-shared-images/tree/docker-devcontainer) to see the last commit where docker / devcontainer support was the default._
 
 ## Example Consumer Project
 
@@ -348,7 +349,7 @@ There are (at least) 2 basic assumptions being made by the sample artifacts.
 > 
 > Be careful with that setting if you use `podman` as well though.
 > 
-> I do. I am a container junky. Having both `docker` and `podman` gives me separate namespaces for dev stuff (docker) vs system stuff (podman) where I need stability.
+> I do. I am a container junky. Having both `docker` and `podman` gives me separate _namespaces_ for dev stuff (docker) vs system stuff (podman) where I need stability.
 > 
 > That frees me up to do `docker system prune -af --volumes` at any time without disturbing my _system_ containers.
 
@@ -360,6 +361,10 @@ There are (at least) 2 basic assumptions being made by the sample artifacts.
 > So the use of the patch has been removed because version 1.8.2 of distrobox was released.
 > 
 > See [distrobox/issues/1758](https://github.com/89luca89/distrobox/issues/1758) for more.
+
+While basic support for docker remains in `ocisictl` (for now), because of the aforementioned downsides, I am moving to use podman only.
+
+_See [tag docker-devcontainer](https://github.com/klmcwhirter/oci-shared-images/tree/docker-devcontainer) to see the last commit where docker / devcontainer support was the default._
 
 ## References
 1. https://github.com/klmcwhirter/stuff/wiki/Bluefin---use-docker-distrobox-container-in-vscode

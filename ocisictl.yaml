@@ -4,8 +4,13 @@
 
 - name: fedora-dev-base
   path: fedora
-  manager: docker
+  manager: podman
   enabled: true
+- name: fedora-dev-base-dx
+  path: fedora
+  manager: podman
+  enabled: false
+  assemble: false
 
 - name: fedora-dev-code
   path: fedora
@@ -14,21 +19,21 @@
 
 - name: fedora-python
   path: fedora
-  manager: docker
+  manager: podman
   enabled: true
 - name: fedora-python-dx
   path: fedora
-  manager: docker
+  manager: podman
   enabled: true
   assemble: true
 
 - name: fedora-python314
   path: fedora
-  manager: docker
+  manager: podman
   enabled: false
 - name: fedora-python314-dx
   path: fedora
-  manager: docker
+  manager: podman
   enabled: false
   assemble: false
 
@@ -44,11 +49,11 @@
 
 - name: fedora-go
   path: fedora
-  manager: docker
+  manager: podman
   enabled: false
 - name: fedora-go-dx
   path: fedora
-  manager: docker
+  manager: podman
   enabled: false
   assemble: false
 

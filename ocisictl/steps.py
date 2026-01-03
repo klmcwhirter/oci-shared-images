@@ -11,6 +11,7 @@ from ocisictl.adapters import (
     container_stop,
     containers_running,
     distrobox_assemble,
+    distrobox_assemble_fixup_bins,
     image_build,
     image_names,
     image_remove,
@@ -29,6 +30,7 @@ def assemble_distrobox(ctx: AppContext, image: ContainerImage) -> None:
     logging.info(f'Assembling {image.distrobox_name} using {manager} ...')
 
     distrobox_assemble(manager=manager, name=image.distrobox_name, verbose=ctx.verbose)
+    distrobox_assemble_fixup_bins(manager=manager, name=image.distrobox_name, verbose=ctx.verbose)
 
     logging.info(f'Assembling {image.distrobox_name} using {manager} ... done.')
 

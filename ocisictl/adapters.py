@@ -1,6 +1,7 @@
 """Adapter classes and functions used by steps"""
 
 
+from pathlib import Path
 from ocisictl.utils import cmd_output_to_terminal, cmd_with_output
 
 # _CM_OPTS = 'BUILDKIT_PROGRESS=plain '
@@ -67,3 +68,38 @@ def distrobox_assemble(manager: str, name: str, verbose: bool) -> None:
         cmd=f'DBX_CONTAINER_ALWAYS_PULL=0 DBX_CONTAINER_MANAGER={manager} distrobox assemble create --replace --name {name}',
         verbose=verbose,
     )
+
+
+def distrobox_assemble_fixup_bin(manager: str, bin: str) -> None:
+    pbin = Path(bin)
+    if text := pbin.read_text():
+        lines_with_cm: list[str] = []
+        lines = text.splitlines()
+
+        for line in lines:
+            if 'distrobox-enter' in line and 'DBX_CONTAINER_MANAGER=' not in line:
+                line = f'\tDBX_CONTAINER_MANAGER={manager} {line.strip()}'
+
+            lines_with_cm.append(line)
+
+        text = '\n'.join(lines_with_cm)
+        pbin.write_text(text)
+
+
+def distrobox_assemble_fixup_bins(manager: str, name: str, verbose: bool) -> None:
+    for bin in distrobox_export_bins_list(manager=manager, name=name, verbose=verbose):
+        print(f'{bin}: {manager} {name}')
+        distrobox_assemble_fixup_bin(manager=manager, bin=bin)
+
+
+def distrobox_export_bins_list(manager: str, name: str, verbose: bool) -> list[str]:
+    out = cmd_with_output(
+        cmd=f'DBX_CONTAINER_ALWAYS_PULL=0 DBX_CONTAINER_MANAGER={manager} distrobox enter {name} -- distrobox-export --list-binaries',
+        verbose=verbose,
+    )
+    lines = out.splitlines()
+    bins = [
+        line.partition('|')[2].strip()
+        for line in lines
+    ]
+    return bins

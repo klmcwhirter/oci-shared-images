@@ -330,7 +330,7 @@ The file is a YAML list where each item in the list represents an image to creat
 |path|the directory containing Containerfile._name_|X|fedora|
 |enabled|whether to process this item or not|X|true or false|
 |tag|the image tag to use; defaults to _latest_||0.14.0|
-|manager|the DBX_CONTAINER_MANAGER to use; defaults to env var or `docker` if not set; accessible in `PATH`||`docker` or `podman`|
+|manager|the DBX_CONTAINER_MANAGER to use; defaults to env var or `podman` if not set; accessible in `PATH`||`docker` or `podman`|
 |**Distrobox Assembly**||||
 |distrobox|override the name for the assemble step; defaults to _name_||debian-bookworm-dx|
 |assemble|whether to assemble or not; defaults to true if _name_ ends with `-dx`||true or false|
@@ -361,6 +361,10 @@ There are (at least) 2 basic assumptions being made by the sample artifacts.
 > So the use of the patch has been removed because version 1.8.2 of distrobox was released.
 > 
 > See [distrobox/issues/1758](https://github.com/89luca89/distrobox/issues/1758) for more.
+> 
+> As of #8 basic support for multiple container managers was added back in place for exported binaries by post-processing the created proxy scripts.
+> 
+> Note that #9 is still open to restore support in exported apps .desktop files.
 
 While basic support for docker remains in `ocisictl` (for now), because of the aforementioned downsides, I am moving to use podman only.
 

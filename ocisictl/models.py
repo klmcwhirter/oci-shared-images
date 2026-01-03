@@ -61,6 +61,10 @@ class AppConfig:
     def managers(self) -> list[str]:
         return sorted(set(ci.manager for ci in self.images if ci.manager))
 
+    @property
+    def managers_active(self) -> list[str]:
+        return sorted(set(ci.manager for ci in self.images_enabled if ci.manager))
+
     @staticmethod
     def from_yaml(file_path: str) -> AppConfig:  # noqa F821
         with open(file_path) as y:
@@ -81,11 +85,20 @@ class AppContext:
 
     @property
     def dbx_container_manager(self) -> str:
-        return os.getenv('DBX_CONTAINER_MANAGER', 'docker')
+        return os.getenv('DBX_CONTAINER_MANAGER', 'podman')
 
     @property
     def managers(self) -> list[str]:
         mgrs = self.config.managers
+
+        if len(mgrs) == 0:
+            mgrs = [self.dbx_container_manager]
+
+        return mgrs
+
+    @property
+    def managers_active(self) -> list[str]:
+        mgrs = self.config.managers_active
 
         if len(mgrs) == 0:
             mgrs = [self.dbx_container_manager]

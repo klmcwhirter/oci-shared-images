@@ -40,7 +40,7 @@ def parse_args(args: list[str]) -> AppContext:
         'clean', description=clean_desc, help=clean_desc, formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     clean.add_argument('-f', '--file', default=config_file, metavar='FILE', help='configuration FILE')
-    clean.add_argument('--podman', default=False, action='store_true', help='clean up buildx artifacts for podman after done')
+    clean.add_argument('--skip_podman', default=False, action='store_true', help='skip clean up buildx artifacts for podman after done')
     clean.add_argument('-v', '--verbose', default=False, action='store_true', help='enable verbose output')
 
     pargs = parser.parse_args(args=args)

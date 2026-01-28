@@ -9,8 +9,8 @@
 - name: fedora-dev-base-dx
   path: fedora
   manager: podman
-  enabled: false
-  assemble: false
+  enabled: true
+  assemble: true
 
 - name: fedora-dev-code
   path: fedora
@@ -20,12 +20,12 @@
 - name: fedora-python
   path: fedora
   manager: podman
-  enabled: true
+  enabled: false
 - name: fedora-python-dx
   path: fedora
   manager: podman
-  enabled: true
-  assemble: true
+  enabled: false
+  assemble: false
 
 - name: fedora-python314
   path: fedora

@@ -5,4 +5,4 @@ FROM quay.io/fedora/fedora:43-x86_64
 LABEL "dev.dbox"="true"
 
 RUN dnf update -y && \
-dnf install -y bash-completion git gitk vim tmux fastfetch fzf zoxide nodejs uv sqlite3 sqlite-analyzer
+dnf install -y bash-completion vim tmux fastfetch fzf zoxide nodejs uv sqlite3 sqlite-analyzer

@@ -11,6 +11,10 @@ scripts:
     features: python
     addons: distrobox-export,.pdm-python
 
+- name: bluefin_ck
+  desc: Detects if $HOME/.local/bin has any problematic exported apps when run on bluefin
+  is-local: true
+  
 - name: process
   desc: build images and assemble distrboxen
   use-python: false

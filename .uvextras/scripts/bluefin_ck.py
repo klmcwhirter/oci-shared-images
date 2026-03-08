@@ -54,7 +54,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--all', default=False, action='store_true', help=f'List all files in {LOCAL_BIN}')
     parser.add_argument('-d', '--delete', default=False, action='store_true',
-                        help=f'delete all files in {LOCAL_BIN} that might cause an problem')
+                        help=f'delete all files in {LOCAL_BIN} that might cause an problem if running on bluefin host')
     return parser.parse_args(args)
 
 
@@ -70,14 +70,15 @@ def main(args: list[str]) -> None:
     cli_delete = ns.delete
 
     console = Console()
+    is_bluefin = is_bluefin_host()
 
-    table = Table(title=f'Bluefin Problematic Exported Binaries in {LOCAL_BIN}', title_justify='left', show_lines=True, box=box.ROUNDED)
+    table = Table(title=f'Bluefin Problematic Exported Binaries in {LOCAL_BIN}\n{is_bluefin=}', title_justify='left', show_lines=True, box=box.ROUNDED)
     table.add_column('Name')
     table.add_column('Problem?', justify='center', style='bold green1')
     table.add_column('Exists?', justify='center', style='bold green1')
     table.add_column('Exported?', justify='center', style='bold green1')
 
-    tbl_data = cmp_bin4exported(LOCAL_BIN, BFIN_PROBLEM_BINS, is_bluefin_host())
+    tbl_data = cmp_bin4exported(LOCAL_BIN, BFIN_PROBLEM_BINS, is_bluefin)
 
     delete_files: list[str] = []
 
@@ -89,7 +90,7 @@ def main(args: list[str]) -> None:
                 '+' if exists else '',
                 '+' if exported else '',
             )
-            if cli_delete and exported and problem:
+            if is_bluefin and cli_delete and exported and problem:
                 delete_files.append(local_path)
 
     console.print(table)

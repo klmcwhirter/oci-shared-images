@@ -10,22 +10,34 @@ from rich import box
 from rich.console import Console
 from rich.table import Table
 
-BFIN_PROBLEM_APPS = [
+BFIN_PROBLEM_BINS = [
     'fastfetch',
     'fzf',
     'jq',
+    'node',
+    'npm',
+    'npx',
+    'pnpm',
+    'pnpx',
+    'uv',
+    'uvx',
+    'zoxide'
 ]
 
 LOCAL_BIN = Path('~/.local/bin').expanduser().resolve()
 
 
-def cmp_bin4exported(bin: Path, apps: list[str], is_bluefin: bool) -> Mapping[str, tuple[bool, bool]]:
+def cmp_bin4exported(bin: Path, bins: list[str], is_bluefin: bool) -> Mapping[str, tuple[bool, bool, bool]]:
+    paths = {lbf for lbf in bin.iterdir() if lbf.is_file()}
+    paths.update(LOCAL_BIN / name for name in BFIN_PROBLEM_BINS)
+
     exported_apps = {
-        str(lbf): (
-            is_bluefin and lbf.name in apps,
+        lbf.name: (
+            is_bluefin and lbf.name in bins,
+            lbf.exists(),
             grep(lbf, 'distrobox-enter')
         )
-        for lbf in bin.iterdir()
+        for lbf in paths
     }
 
     return {
@@ -42,7 +54,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--all', default=False, action='store_true', help=f'List all files in {LOCAL_BIN}')
     parser.add_argument('-d', '--delete', default=False, action='store_true',
-                        help=f'delete all files in {LOCAL_BIN} that might cause an issue')
+                        help=f'delete all files in {LOCAL_BIN} that might cause an problem')
     return parser.parse_args(args)
 
 
@@ -59,23 +71,25 @@ def main(args: list[str]) -> None:
 
     console = Console()
 
-    table = Table(title='Bluefin Issue Exported Apps', title_justify='left', show_lines=True, box=box.ROUNDED)
-    table.add_column('App')
-    table.add_column('Issue?', justify='center', style='bold green1')
+    table = Table(title=f'Bluefin Problematic Exported Binaries in {LOCAL_BIN}', title_justify='left', show_lines=True, box=box.ROUNDED)
+    table.add_column('Name')
+    table.add_column('Problem?', justify='center', style='bold green1')
+    table.add_column('Exists?', justify='center', style='bold green1')
     table.add_column('Exported?', justify='center', style='bold green1')
 
-    tbl_data = cmp_bin4exported(LOCAL_BIN, BFIN_PROBLEM_APPS, is_bluefin_host())
+    tbl_data = cmp_bin4exported(LOCAL_BIN, BFIN_PROBLEM_BINS, is_bluefin_host())
 
     delete_files: list[str] = []
 
-    for local_path, (issue, exported) in tbl_data.items():
-        if cli_all or issue:
+    for local_path, (problem, exists, exported) in tbl_data.items():
+        if cli_all or problem:
             table.add_row(
                 os.path.basename(local_path),
-                '+' if issue else '',
+                '+' if problem else '',
+                '+' if exists else '',
                 '+' if exported else '',
             )
-            if cli_delete and exported and issue:
+            if cli_delete and exported and problem:
                 delete_files.append(local_path)
 
     console.print(table)
